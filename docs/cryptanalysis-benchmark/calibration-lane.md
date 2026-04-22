@@ -1,16 +1,13 @@
----
-name: cryptanalysis-calibration
-description: Use when building, calibrating, or using a confidence-gated symmetric-cryptanalysis analysis lane, especially when you need to decide between reusing an existing lane and running a new calibration.
----
+# Calibration Lane
 
-# Cryptanalysis Calibration
+This note records the internal calibration lane used by the public `cryptanalysis` skill.
 
-Use this skill when the task is to take symmetric-cryptanalysis materials and either:
+Use this lane when the task is to take symmetric-cryptanalysis materials and either:
 
 - use an already validated analysis lane
 - or calibrate a new lane before trusting it
 
-This skill is not a paper-reproduction machine.
+This lane is not a paper-reproduction machine.
 Calibration is a trust gate, not the end goal.
 The end goal is to use a trusted lane for actual analysis.
 

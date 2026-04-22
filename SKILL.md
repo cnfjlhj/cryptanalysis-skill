@@ -13,8 +13,8 @@ Use this when the user means:
 - "do the cryptanalysis workflow on this bundle"
 - "tell me what the current system can conclude from these materials"
 
-Do not expose `cryptanalysis-calibration` as the only public surface when the user is asking for direct analysis.
-`cryptanalysis-calibration` is the internal trust and execution backbone.
+This repository intentionally exposes one public skill only.
+The calibration logic exists, but only as an internal lane and reference note.
 
 ## Core Principle
 
@@ -126,7 +126,7 @@ Today this skill is backed by the calibration lane because that is the trustwort
 
 Primary internal pieces:
 
-- `skills/cryptanalysis-calibration/SKILL.md`
+- `docs/cryptanalysis-benchmark/calibration-lane.md`
 - `scripts/cryptanalysis-benchmark/run-cryptanalysis-analysis.js`
 - `scripts/cryptanalysis-benchmark/run-calibration-case.js`
 - `scripts/cryptanalysis-benchmark/render-analysis-report.js`
@@ -150,7 +150,7 @@ Do not hide the fact that the run moved to a remote machine.
 
 Current remote baseline information lives in:
 
-- `skills/cryptanalysis-calibration/SKILL.md`
+- `docs/cryptanalysis-benchmark/calibration-lane.md`
 
 ## Current Full-Chain Demo Lane
 

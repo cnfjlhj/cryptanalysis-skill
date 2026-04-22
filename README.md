@@ -37,9 +37,6 @@ raw materials
 
 ```text
 SKILL.md
-skills/
-  cryptanalysis/
-  cryptanalysis-calibration/
 docs/cryptanalysis-benchmark/
 scripts/cryptanalysis-benchmark/
 tests/
@@ -51,7 +48,7 @@ fixtures/
 说明：
 
 - 根目录 `SKILL.md` 是对外入口
-- `skills/cryptanalysis-calibration/` 是内部 trust lane
+- `docs/cryptanalysis-benchmark/calibration-lane.md` 是内部 calibration 说明，不是第二个 skill
 - `fixtures/` 内放的是已净化的 demo/bootstrap 结果，不含原工程私有绝对路径
 
 ## 快速开始
