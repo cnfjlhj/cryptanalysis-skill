@@ -1,0 +1,12 @@
+node_modules/
+outputs/
+*.log
+*.aux
+*.fdb_latexmk
+*.fls
+*.out
+*.toc
+__pycache__/
+.venv/
+.DS_Store
+

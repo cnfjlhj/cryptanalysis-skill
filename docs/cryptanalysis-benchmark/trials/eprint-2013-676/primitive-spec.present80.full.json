@@ -1,0 +1,307 @@
+{
+  "primitive_id": "present80",
+  "primitive_name": "PRESENT-80",
+  "family": "spn",
+  "source_refs": [
+    {
+      "kind": "primitive_paper",
+      "label": "PRESENT CHES 2007",
+      "location": "Section 3, round structure and key schedule",
+      "url": "https://www.iacr.org/archive/ches2007/47270450/47270450.pdf"
+    },
+    {
+      "kind": "attack_paper",
+      "label": "ePrint 2013/676",
+      "location": "Appendix A.1",
+      "url": "https://eprint.iacr.org/2013/676"
+    }
+  ],
+  "block_size_bits": 64,
+  "key_size_bits": 80,
+  "state": {
+    "containers": [
+      {
+        "name": "state",
+        "kind": "bitvector",
+        "width_bits": 64,
+        "count": 1
+      },
+      {
+        "name": "round_key",
+        "kind": "bitvector",
+        "width_bits": 64,
+        "count": 1
+      },
+      {
+        "name": "master_key_register",
+        "kind": "register",
+        "width_bits": 80,
+        "count": 1
+      },
+      {
+        "name": "round_counter",
+        "kind": "bitvector",
+        "width_bits": 5,
+        "count": 1
+      }
+    ]
+  },
+  "round_function": {
+    "round_index_origin": 1,
+    "round_count_claimed": 31,
+    "ops": [
+      {
+        "op_id": "ark",
+        "op_type": "key_add",
+        "inputs": [
+          "state",
+          "round_key"
+        ],
+        "outputs": [
+          "state_after_ark"
+        ],
+        "params": {
+          "mode": "bitwise_xor",
+          "width_bits": 64
+        },
+        "semantic_tags": [
+          "xor",
+          "state_key_combination"
+        ],
+        "evidence": [
+          "present-ches2007.txt: addRoundKey description"
+        ]
+      },
+      {
+        "op_id": "sbox_layer",
+        "op_type": "sbox",
+        "inputs": [
+          "state_after_ark"
+        ],
+        "outputs": [
+          "state_after_sbox"
+        ],
+        "params": {
+          "parallel_count": 16,
+          "nibble_width_bits": 4,
+          "sbox_hex": [
+            "C",
+            "5",
+            "6",
+            "B",
+            "9",
+            "0",
+            "A",
+            "D",
+            "3",
+            "E",
+            "F",
+            "8",
+            "4",
+            "7",
+            "1",
+            "2"
+          ]
+        },
+        "semantic_tags": [
+          "nonlinear_layer",
+          "parallel_sboxes"
+        ],
+        "evidence": [
+          "present-ches2007.txt: S-box table"
+        ]
+      },
+      {
+        "op_id": "player",
+        "op_type": "permute_bits",
+        "inputs": [
+          "state_after_sbox"
+        ],
+        "outputs": [
+          "state"
+        ],
+        "params": {
+          "mapping": [
+            0,
+            16,
+            32,
+            48,
+            1,
+            17,
+            33,
+            49,
+            2,
+            18,
+            34,
+            50,
+            3,
+            19,
+            35,
+            51,
+            4,
+            20,
+            36,
+            52,
+            5,
+            21,
+            37,
+            53,
+            6,
+            22,
+            38,
+            54,
+            7,
+            23,
+            39,
+            55,
+            8,
+            24,
+            40,
+            56,
+            9,
+            25,
+            41,
+            57,
+            10,
+            26,
+            42,
+            58,
+            11,
+            27,
+            43,
+            59,
+            12,
+            28,
+            44,
+            60,
+            13,
+            29,
+            45,
+            61,
+            14,
+            30,
+            46,
+            62,
+            15,
+            31,
+            47,
+            63
+          ]
+        },
+        "semantic_tags": [
+          "linear_permutation"
+        ],
+        "evidence": [
+          "present-ches2007.txt: pLayer permutation table"
+        ]
+      }
+    ]
+  },
+  "key_schedule": {
+    "modeled": true,
+    "register_name": "master_key_register",
+    "round_key_output": {
+      "source_container": "master_key_register",
+      "start_bit": 79,
+      "end_bit": 16,
+      "width_bits": 64,
+      "bit_order_notes": "Round key Ki is the left-most 64 bits of the current 80-bit key register before the update step."
+    },
+    "ops": [
+      {
+        "op_id": "ks_rotate_left_61",
+        "op_type": "rotate_left",
+        "inputs": [
+          "master_key_register"
+        ],
+        "outputs": [
+          "ks_after_rot"
+        ],
+        "params": {
+          "amount": 61,
+          "width_bits": 80
+        },
+        "semantic_tags": [
+          "key_schedule",
+          "register_update"
+        ],
+        "evidence": [
+          "present-ches2007.txt: key schedule step 1"
+        ]
+      },
+      {
+        "op_id": "ks_sbox_top_nibble",
+        "op_type": "sbox",
+        "inputs": [
+          "ks_after_rot"
+        ],
+        "outputs": [
+          "ks_after_sbox"
+        ],
+        "params": {
+          "target_bit_range": {
+            "start_bit": 79,
+            "end_bit": 76
+          },
+          "nibble_width_bits": 4,
+          "sbox_hex": [
+            "C",
+            "5",
+            "6",
+            "B",
+            "9",
+            "0",
+            "A",
+            "D",
+            "3",
+            "E",
+            "F",
+            "8",
+            "4",
+            "7",
+            "1",
+            "2"
+          ]
+        },
+        "semantic_tags": [
+          "key_schedule",
+          "nonlinear_update"
+        ],
+        "evidence": [
+          "present-ches2007.txt: key schedule step 2"
+        ]
+      },
+      {
+        "op_id": "ks_xor_round_counter",
+        "op_type": "xor",
+        "inputs": [
+          "ks_after_sbox",
+          "round_counter"
+        ],
+        "outputs": [
+          "master_key_register"
+        ],
+        "params": {
+          "target_bit_range": {
+            "start_bit": 19,
+            "end_bit": 15
+          },
+          "rhs_alignment": "least_significant_bit_on_right"
+        },
+        "semantic_tags": [
+          "key_schedule",
+          "round_counter_injection"
+        ],
+        "evidence": [
+          "present-ches2007.txt: key schedule step 3"
+        ]
+      }
+    ],
+    "notes": "This schema iteration now captures the 80-bit key schedule structurally enough for related-key normalization. It still does not encode the local MILP semantics needed to turn the key schedule into backend constraints."
+  },
+  "assumptions": [
+    "The primitive paper defines 31 rounds plus a final post-whitening addRoundKey.",
+    "The selected validation target in this trial uses a 24-round reduced version of PRESENT-80 from the attack paper.",
+    "The round key is extracted before the key register update for that round."
+  ]
+}

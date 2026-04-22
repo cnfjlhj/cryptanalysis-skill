@@ -1,0 +1,78 @@
+{
+  "reference_set_id": "eprint-2013-676-present80-rkdiff-calibration-v1",
+  "paper_id": "eprint-2013-676",
+  "paper_title": "Automatic Security Evaluation and (Related-key) Differential Characteristic Search: Application to SIMON, PRESENT, LBlock, DES(L) and Other Bit-oriented Block Ciphers",
+  "primitive_family": "spn",
+  "attack_family": "related_key_differential",
+  "bundle_complete": "preferred",
+  "primitive_spec_ok": true,
+  "attack_spec_ok": true,
+  "backend_target": "milp",
+  "default_mismatch_stage": "validation_gap",
+  "default_next_action": "Tighten the calibration lane or increase the certified bound before treating larger-round claims as trustworthy.",
+  "emission_defaults": {
+    "instantiation_path": "model-instantiation.present80-rkdiff24.json",
+    "primitive_spec_path": "primitive-spec.present80.full.json",
+    "local_semantics_path": "local-semantics.present-sbox.cdp.json",
+    "unit_id": "p1_compute_12r_lower_bound_model",
+    "default_sbox_model": "cdp",
+    "output_root": "../../../../outputs/cryptanalysis-benchmark/eprint-2013-676"
+  },
+  "cases": [
+    {
+      "case_id": "present80-table4-r4-exact-v2",
+      "description": "Appendix A.1 Table 4 4-round minimum active S-boxes with the exact PRESENT S-box lane.",
+      "claim_kind": "exact_minimum",
+      "objective_direction": "minimize",
+      "expected_value": 2,
+      "expected_claim": "Table 4 reports that the minimum number of active S-boxes for 4-round PRESENT-80 is 2.",
+      "paper_location": "Appendix A.1, Table 4",
+      "round_end": 4,
+      "expected_sbox_model": "exact",
+      "expected_unit_id": "p1_compute_12r_lower_bound_model",
+      "tolerance": 1e-9,
+      "next_action_on_unresolved": "Raise solve confidence for the 4-round exact lane before using it as a baseline calibration checkpoint."
+    },
+    {
+      "case_id": "present80-table4-r5-exact-v2",
+      "description": "Appendix A.1 Table 4 5-round minimum active S-boxes with the exact PRESENT S-box lane.",
+      "claim_kind": "exact_minimum",
+      "objective_direction": "minimize",
+      "expected_value": 3,
+      "expected_claim": "Table 4 reports that the minimum number of active S-boxes for 5-round PRESENT-80 is 3.",
+      "paper_location": "Appendix A.1, Table 4",
+      "round_end": 5,
+      "expected_sbox_model": "exact",
+      "expected_unit_id": "p1_compute_12r_lower_bound_model",
+      "tolerance": 1e-9,
+      "next_action_on_unresolved": "Keep tuning the 5-round exact lane until the checkpoint is either certified or clearly contradicted."
+    },
+    {
+      "case_id": "present80-table4-r6-exact-v2",
+      "description": "Appendix A.1 Table 4 6-round minimum active S-boxes with the exact PRESENT S-box lane.",
+      "claim_kind": "exact_minimum",
+      "objective_direction": "minimize",
+      "expected_value": 5,
+      "expected_claim": "Table 4 reports that the minimum number of active S-boxes for 6-round PRESENT-80 is 5.",
+      "paper_location": "Appendix A.1, Table 4",
+      "round_end": 6,
+      "expected_sbox_model": "exact",
+      "expected_unit_id": "p1_compute_12r_lower_bound_model",
+      "tolerance": 1e-9,
+      "next_action_on_unresolved": "Increase solve budget or tighten the 6-round exact lane until the optimum is certified."
+    },
+    {
+      "case_id": "present80-12r-lower-bound-support",
+      "description": "Appendix A.1 support check for the 12-round lower bound N12 >= 16.",
+      "claim_kind": "lower_bound",
+      "objective_direction": "minimize",
+      "expected_value": 16,
+      "expected_claim": "Appendix A.1 claims that any 12 consecutive rounds of PRESENT-80 have at least 16 active S-boxes.",
+      "paper_location": "Appendix A.1, Table 4 and the concluding paragraph immediately below it",
+      "round_end": 12,
+      "expected_unit_id": "p1_compute_12r_lower_bound_model",
+      "tolerance": 1e-9,
+      "next_action_on_unresolved": "Keep calibrating smaller windows or raise the certified lower bound before promoting the 24-round 2^-64 derivation."
+    }
+  ]
+}

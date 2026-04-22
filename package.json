@@ -1,0 +1,24 @@
+{
+  "name": "cryptanalysis-skill",
+  "version": "0.1.0",
+  "description": "Standalone cryptanalysis skill repository for structured symmetric-cryptanalysis analysis and validation demos",
+  "license": "MIT",
+  "private": false,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node tests/test-cryptanalysis-benchmark-prepare-analysis-intake.js && node tests/test-cryptanalysis-benchmark-intake-examples.js && node tests/test-cryptanalysis-benchmark-resolve-semantic-attachments.js && node tests/test-cryptanalysis-benchmark-generate-model-instantiation.js && node tests/test-cryptanalysis-benchmark-emit-milp-lp.js && node tests/test-cryptanalysis-benchmark-render-verdict.js && node tests/test-cryptanalysis-benchmark-render-calibration-report.js && node tests/test-cryptanalysis-benchmark-run-calibration-case.js && node tests/test-cryptanalysis-benchmark-run-cryptanalysis-analysis.js && node tests/test-cryptanalysis-benchmark-run-cryptanalysis-demo.js && node tests/test-cryptanalysis-benchmark-run-full-chain-demo.js && node tests/test-cryptanalysis-benchmark-run-cryptanalysis-paper.js && node tests/test-cryptanalysis-benchmark-audit-frontend-reference-corpus.js",
+    "demo": "node scripts/cryptanalysis-benchmark/run-cryptanalysis-demo.js --demo all --no-report",
+    "demo:full-chain": "node scripts/cryptanalysis-benchmark/run-cryptanalysis-full-chain-demo.js --no-report",
+    "demo:paper": "node scripts/cryptanalysis-benchmark/run-cryptanalysis-analysis.js --bundle docs/cryptanalysis-benchmark/examples/eprint-2013-676.present80-r5.bundle.json --no-report",
+    "audit:frontend": "node scripts/cryptanalysis-benchmark/audit-frontend-reference-corpus.js"
+  },
+  "keywords": [
+    "cryptanalysis",
+    "skill",
+    "milp",
+    "present80",
+    "symmetric-cryptanalysis"
+  ]
+}

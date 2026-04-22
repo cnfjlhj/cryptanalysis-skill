@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AnalysisIntakeResult",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "bundleId",
+    "bundlePath",
+    "sourceItemCount",
+    "sourceItems",
+    "bundleState",
+    "readyForRouting",
+    "missingFields",
+    "intakeQuestions",
+    "warnings",
+    "nextAction",
+    "requestDraft",
+    "primitiveCard",
+    "attackCard"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "cryptanalysis-intake-result.v0"
+    },
+    "bundleId": {
+      "type": "string"
+    },
+    "bundlePath": {
+      "type": "string"
+    },
+    "sourceItemCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sourceItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "label",
+          "role",
+          "path",
+          "uri",
+          "notes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "bundleState": {
+      "type": "string"
+    },
+    "readyForRouting": {
+      "type": "boolean"
+    },
+    "missingFields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "intakeQuestions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nextAction": {
+      "type": "string"
+    },
+    "requestDraft": {
+      "$ref": "./analysis-request.schema.json"
+    },
+    "primitiveCard": {
+      "$ref": "./primitive-intake-card.schema.json"
+    },
+    "attackCard": {
+      "$ref": "./attack-intake-card.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

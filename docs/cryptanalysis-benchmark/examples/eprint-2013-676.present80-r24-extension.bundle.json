@@ -1,0 +1,40 @@
+{
+  "bundle_id": "eprint-2013-676-present80-r24-extension",
+  "source_items": [
+    {
+      "id": "attack-paper",
+      "kind": "attack_paper_url",
+      "label": "eprint-2013-676",
+      "role": "attack-paper",
+      "uri": "https://eprint.iacr.org/2013/676"
+    },
+    {
+      "id": "primitive-paper",
+      "kind": "primitive_paper_url",
+      "label": "present-ches2007",
+      "role": "primitive-paper",
+      "uri": "https://www.iacr.org/archive/ches2007/47270450/47270450.pdf"
+    }
+  ],
+  "paper": {
+    "id": "eprint-2013-676",
+    "title": "Automatic Security Evaluation and (Related-key) Differential Characteristic Search: Application to SIMON, PRESENT, LBlock, DES(L) and Other Bit-oriented Block Ciphers"
+  },
+  "primitive": {
+    "id": "PRESENT-80",
+    "name": "PRESENT-80",
+    "family": "spn"
+  },
+  "attack": {
+    "family": "related_key_differential",
+    "difference_model": "xor",
+    "claim_kind": "characteristic",
+    "granularity": "bit"
+  },
+  "target": {
+    "claim": "Need the 24-round related-key differential upper-bound claim, not only the small validated checkpoints.",
+    "comparison_point": "Appendix A.1 derived 24-round result",
+    "round_end": 24
+  },
+  "notes": "Current-lane extension example: should route to needs-calibration rather than unsupported-current-scope."
+}

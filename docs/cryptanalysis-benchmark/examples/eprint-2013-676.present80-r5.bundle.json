@@ -1,0 +1,46 @@
+{
+  "bundle_id": "eprint-2013-676-present80-r5",
+  "source_items": [
+    {
+      "id": "attack-paper",
+      "kind": "attack_paper_url",
+      "label": "eprint-2013-676",
+      "role": "attack-paper",
+      "uri": "https://eprint.iacr.org/2013/676"
+    },
+    {
+      "id": "primitive-paper",
+      "kind": "primitive_paper_url",
+      "label": "present-ches2007",
+      "role": "primitive-paper",
+      "uri": "https://www.iacr.org/archive/ches2007/47270450/47270450.pdf"
+    }
+  ],
+  "paper": {
+    "id": "eprint-2013-676",
+    "title": "Automatic Security Evaluation and (Related-key) Differential Characteristic Search: Application to SIMON, PRESENT, LBlock, DES(L) and Other Bit-oriented Block Ciphers"
+  },
+  "primitive": {
+    "id": "PRESENT-80",
+    "name": "PRESENT-80",
+    "family": "spn",
+    "block_size_bits": 64,
+    "key_size_bits": 80,
+    "round_count_claimed": 31
+  },
+  "attack": {
+    "family": "related_key_differential",
+    "difference_model": "xor",
+    "claim_kind": "characteristic",
+    "granularity": "bit",
+    "exactness_goal": "exact"
+  },
+  "target": {
+    "case_id": "present80-table4-r5-exact-v2",
+    "claim": "Table 4 reports that the minimum number of active S-boxes for 5-round PRESENT-80 is 3.",
+    "comparison_point": "Appendix A.1 Table 4",
+    "round_end": 5,
+    "sbox_model": "exact"
+  },
+  "notes": "Complete example bundle for the currently validated checkpoint lane."
+}

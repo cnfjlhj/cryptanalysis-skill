@@ -1,0 +1,54 @@
+{
+  "reference_id": "eprint-2022-513.frontend-reference.v0",
+  "status": "active",
+  "paper_id": "eprint-2022-513",
+  "paper_title": "CASCADA: Characteristic Automated Search of Cryptographic Algorithms for Distinguishing Attacks",
+  "wave": "wave-1",
+  "primitive_family": "framework_mixed",
+  "attack_family": "framework_multi_attack",
+  "stress_points": [
+    "framework-level primitive description",
+    "bit-vector normalization",
+    "multi-attack abstraction",
+    "report-layer consistency"
+  ],
+  "raw_bundle": {
+    "label": "CASCADA bundle",
+    "path": "docs/cryptanalysis-benchmark/examples/eprint-2022-513.cascada.bundle.json"
+  },
+  "frontend_layers": {
+    "input_normalization": {
+      "status": "available",
+      "artifacts": [
+        {
+          "label": "CASCADA bundle",
+          "path": "docs/cryptanalysis-benchmark/examples/eprint-2022-513.cascada.bundle.json"
+        }
+      ],
+      "notes": "Bundle exists as the current framework-oriented corpus seed."
+    },
+    "algorithm_description": {
+      "status": "missing",
+      "artifacts": [],
+      "notes": "No curated algorithm description exists yet."
+    },
+    "structural_ir": {
+      "status": "missing",
+      "artifacts": [],
+      "notes": "No structural IR exists yet."
+    }
+  },
+  "downstream_status": {
+    "status": "none",
+    "artifacts": [],
+    "notes": "No downstream semantic or execution artifacts exist yet."
+  },
+  "current_frontend_ceiling": "bundle_only",
+  "next_priority": "Create an algorithm description that captures framework-level primitive and attack abstractions without collapsing them into one-off prose.",
+  "known_gaps": [
+    "No curated algorithm description yet.",
+    "No structural IR yet.",
+    "No agreed frontend normalization pattern for framework-oriented papers."
+  ],
+  "notes": "P4 is tracked mainly to pressure-test frontend abstraction rather than to claim immediate execution readiness."
+}

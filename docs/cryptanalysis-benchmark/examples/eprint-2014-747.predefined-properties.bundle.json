@@ -1,0 +1,30 @@
+{
+  "bundle_id": "eprint-2014-747-predefined-properties",
+  "source_items": [
+    {
+      "id": "attack-paper",
+      "kind": "attack_paper_url",
+      "label": "eprint-2014-747",
+      "role": "attack-paper",
+      "uri": "https://eprint.iacr.org/2014/747"
+    }
+  ],
+  "paper": {
+    "id": "eprint-2014-747",
+    "title": "Towards Finding the Best Characteristics of Some Bit-Oriented Block Ciphers and Automatic Enumeration of (Related-key) Differential and Linear Characteristics with Predefined Properties"
+  },
+  "primitive": {
+    "id": "PRESENT-80",
+    "family": "spn"
+  },
+  "attack": {
+    "family": "related_key_differential",
+    "difference_model": "xor",
+    "claim_kind": "enumeration_count",
+    "granularity": "bit"
+  },
+  "target": {
+    "claim": "Need an enumeration-style predefined-property characteristic benchmark."
+  },
+  "notes": "Plausible next paper in the same broad area, but not mapped to a current validated checkpoint."
+}

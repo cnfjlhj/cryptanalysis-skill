@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CryptanalysisFrontendReference",
+  "$defs": {
+    "artifactRef": {
+      "type": "object",
+      "required": [
+        "label",
+        "path"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "layerRecord": {
+      "type": "object",
+      "required": [
+        "status",
+        "artifacts"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "missing",
+            "available",
+            "golden"
+          ]
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifactRef"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "downstreamRecord": {
+      "type": "object",
+      "required": [
+        "status",
+        "artifacts"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "none",
+            "semantic_only",
+            "semantic_blocked",
+            "execution_backed"
+          ]
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifactRef"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "reference_id",
+    "status",
+    "paper_id",
+    "paper_title",
+    "wave",
+    "primitive_family",
+    "attack_family",
+    "stress_points",
+    "raw_bundle",
+    "frontend_layers",
+    "downstream_status",
+    "current_frontend_ceiling",
+    "next_priority",
+    "known_gaps"
+  ],
+  "properties": {
+    "reference_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active"
+      ]
+    },
+    "paper_id": {
+      "type": "string"
+    },
+    "paper_title": {
+      "type": "string"
+    },
+    "wave": {
+      "type": "string"
+    },
+    "primitive_family": {
+      "type": "string"
+    },
+    "attack_family": {
+      "type": "string"
+    },
+    "stress_points": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "raw_bundle": {
+      "$ref": "#/$defs/artifactRef"
+    },
+    "frontend_layers": {
+      "type": "object",
+      "required": [
+        "input_normalization",
+        "algorithm_description",
+        "structural_ir"
+      ],
+      "properties": {
+        "input_normalization": {
+          "$ref": "#/$defs/layerRecord"
+        },
+        "algorithm_description": {
+          "$ref": "#/$defs/layerRecord"
+        },
+        "structural_ir": {
+          "$ref": "#/$defs/layerRecord"
+        }
+      },
+      "additionalProperties": false
+    },
+    "downstream_status": {
+      "$ref": "#/$defs/downstreamRecord"
+    },
+    "current_frontend_ceiling": {
+      "type": "string",
+      "enum": [
+        "bundle_only",
+        "algorithm_description_ready",
+        "structural_ir_ready"
+      ]
+    },
+    "next_priority": {
+      "type": "string"
+    },
+    "known_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

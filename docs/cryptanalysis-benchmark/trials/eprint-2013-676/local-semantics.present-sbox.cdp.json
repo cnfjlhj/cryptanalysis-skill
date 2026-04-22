@@ -1,0 +1,165 @@
+{
+  "rule_pack_id": "present-sbox-xor-diff-cdp-v1",
+  "target_primitive_id": "present80",
+  "source_refs": [
+    {
+      "kind": "primitive_paper",
+      "label": "PRESENT CHES 2007",
+      "location": "Section 3, S-box definition",
+      "url": "https://www.iacr.org/archive/ches2007/47270450/47270450.pdf"
+    },
+    {
+      "kind": "attack_paper",
+      "label": "ePrint 2013/676",
+      "location": "Fact 1, Fact 2, Table 1, Sect. 4 / Appendix A.1",
+      "url": "https://eprint.iacr.org/2013/676"
+    }
+  ],
+  "component_scope": {
+    "operator_type": "sbox",
+    "component_name": "present_sbox",
+    "input_width_bits": 4,
+    "output_width_bits": 4,
+    "usage_notes": "The same 4x4 S-box is used in the encryption round and in the top nibble of the 80-bit key schedule."
+  },
+  "property_domain": {
+    "semantic_domain": "xor_differential",
+    "granularity": "bit",
+    "exactness": "valid_cutting_off",
+    "intended_backends": [
+      "milp"
+    ]
+  },
+  "resolver_metadata": {
+    "rule_families": [
+      "present_sbox_differential_or_activity"
+    ],
+    "component_name_aliases": [
+      "present_sbox"
+    ],
+    "priority": 10,
+    "matching_notes": "This pack is the current repository-side local-semantics artifact for PRESENT 4-bit xor-differential S-box activity / CDP modeling."
+  },
+  "variable_layout": {
+    "input_vars": [
+      "x0",
+      "x1",
+      "x2",
+      "x3"
+    ],
+    "output_vars": [
+      "y0",
+      "y1",
+      "y2",
+      "y3"
+    ],
+    "indexing_notes": "The paper states that x3 and y3 are the least significant bits."
+  },
+  "rule_groups": [
+    {
+      "group_id": "present_cdp_constraints",
+      "group_type": "logical_condition_cdp",
+      "purpose": "MILP tightening for PRESENT S-box differential propagation in the related-key security-evaluation lane used by Appendix A.1.",
+      "removed_impossible_patterns_count": 42,
+      "inequalities": [
+        {
+          "label": "cdp_1",
+          "coefficients": {
+            "x0": -1,
+            "x1": 1,
+            "x2": 1,
+            "x3": -1,
+            "y3": -1
+          },
+          "constant": 2,
+          "relation": ">=",
+          "derivation": "Fact 1(i): if the input difference is 1001 then the least significant output bit must be 0.",
+          "evidence": [
+            "eprint-2013-676.txt: Fact 1 / Fact 2 / Table 1"
+          ]
+        },
+        {
+          "label": "cdp_2",
+          "coefficients": {
+            "x0": 1,
+            "x1": 1,
+            "x2": 1,
+            "x3": -1,
+            "y3": 1
+          },
+          "constant": 0,
+          "relation": ">=",
+          "derivation": "Fact 1(ii): if the input difference is 0001 then the least significant output bit must be 1.",
+          "evidence": [
+            "eprint-2013-676.txt: Fact 1 / Fact 2 / Table 1"
+          ]
+        },
+        {
+          "label": "cdp_3",
+          "coefficients": {
+            "x0": -1,
+            "x1": 1,
+            "x2": 1,
+            "x3": 1,
+            "y3": 1
+          },
+          "constant": 0,
+          "relation": ">=",
+          "derivation": "Fact 1(ii): if the input difference is 1000 then the least significant output bit must be 1.",
+          "evidence": [
+            "eprint-2013-676.txt: Fact 1 / Fact 2 / Table 1"
+          ]
+        },
+        {
+          "label": "cdp_4",
+          "coefficients": {
+            "x3": 1,
+            "y0": 1,
+            "y1": 1,
+            "y2": 1,
+            "y3": -1
+          },
+          "constant": 0,
+          "relation": ">=",
+          "derivation": "Fact 1(iii): if the output difference is 0001 then the least significant input bit must be 1.",
+          "evidence": [
+            "eprint-2013-676.txt: Fact 1 / Fact 2 / Table 1"
+          ]
+        },
+        {
+          "label": "cdp_5",
+          "coefficients": {
+            "x3": 1,
+            "y0": 1,
+            "y1": -1,
+            "y2": 1,
+            "y3": 1
+          },
+          "constant": 0,
+          "relation": ">=",
+          "derivation": "Fact 1(iii): if the output difference is 0100 then the least significant input bit must be 1.",
+          "evidence": [
+            "eprint-2013-676.txt: Fact 1 / Fact 2 / Table 1"
+          ]
+        },
+        {
+          "label": "cdp_6",
+          "coefficients": {
+            "x3": -1,
+            "y0": 1,
+            "y1": -1,
+            "y2": 1,
+            "y3": -1
+          },
+          "constant": 2,
+          "relation": ">=",
+          "derivation": "Fact 1(iv): if the output difference is 0101 then the least significant input bit must be 0.",
+          "evidence": [
+            "eprint-2013-676.txt: Fact 1 / Fact 2 / Table 1"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": "This rule pack intentionally captures only the CDP constraints used in the logical-condition modeling lane. The selected 6 convex-hull inequalities from Table 3 are not yet encoded because Appendix A.1 explicitly uses the Sect. 3.1 logical-condition lane for the chosen PRESENT-80 security-bound claim."
+}

@@ -1,0 +1,509 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StructuralIRV0",
+  "type": "object",
+  "$defs": {
+    "operationParameterValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean"
+            ]
+          }
+        }
+      ]
+    },
+    "operationParameters": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/operationParameterValue"
+      }
+    },
+    "refinementRequirement": {
+      "type": "object",
+      "required": [
+        "kind",
+        "summary"
+      ],
+      "properties": {
+        "slot_id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "rule_family": {
+          "type": "string"
+        },
+        "required_for": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "indexingRelation": {
+      "type": "object",
+      "required": [
+        "relation_id",
+        "style",
+        "family_refs",
+        "summary"
+      ],
+      "properties": {
+        "relation_id": {
+          "type": "string"
+        },
+        "style": {
+          "type": "string"
+        },
+        "domain_ref": {
+          "type": "string"
+        },
+        "family_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "active_selector": {
+          "type": "string"
+        },
+        "selection_rule": {
+          "type": "string"
+        },
+        "advancement_rule": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "ir_id",
+    "status",
+    "source_algorithm_description_id",
+    "analysis_context",
+    "index_domains",
+    "state_families",
+    "operator_templates",
+    "indexing_relations",
+    "dataflow_edges",
+    "observation_points",
+    "provenance_and_gaps"
+  ],
+  "properties": {
+    "ir_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "reviewable",
+        "frozen-for-semantic-refinement"
+      ]
+    },
+    "source_algorithm_description_id": {
+      "type": "string"
+    },
+    "analysis_context": {
+      "type": "object",
+      "required": [
+        "primitive_id",
+        "attack_family",
+        "semantic_domain",
+        "granularity",
+        "target_round_start",
+        "target_round_end",
+        "objective_metric",
+        "validation_anchor_ref"
+      ],
+      "properties": {
+        "primitive_id": {
+          "type": "string"
+        },
+        "attack_family": {
+          "type": "string"
+        },
+        "semantic_domain": {
+          "type": "string"
+        },
+        "granularity": {
+          "type": "string"
+        },
+        "exactness_goal": {
+          "type": "string"
+        },
+        "target_round_start": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "target_round_end": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "objective_metric": {
+          "type": "string"
+        },
+        "objective_direction": {
+          "type": "string"
+        },
+        "scenario_flags": {
+          "type": "object",
+          "properties": {
+            "related_key": {
+              "type": "boolean"
+            },
+            "distinguisher_only": {
+              "type": "boolean"
+            },
+            "key_recovery_stage_present": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "validation_anchor_ref": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "index_domains": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "domain_id",
+          "kind",
+          "start",
+          "end"
+        ],
+        "properties": {
+          "domain_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "round",
+              "round_boundary",
+              "update",
+              "bit",
+              "cell",
+              "word",
+              "slot",
+              "custom"
+            ]
+          },
+          "start": {
+            "type": "integer"
+          },
+          "end": {
+            "type": "integer"
+          },
+          "purpose": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "state_families": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "family_id",
+          "role",
+          "container_kind",
+          "width_bits",
+          "index_domain_refs",
+          "summary"
+        ],
+        "properties": {
+          "family_id": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "container_kind": {
+            "type": "string"
+          },
+          "width_bits": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "index_domain_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string"
+          },
+          "derived_from": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "operator_templates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "template_id",
+          "name",
+          "op_type",
+          "repeat_domain_refs",
+          "input_family_refs",
+          "output_family_refs",
+          "summary"
+        ],
+        "properties": {
+          "template_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "op_type": {
+            "type": "string"
+          },
+          "repeat_domain_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "input_family_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "output_family_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "operator_parameters": {
+            "$ref": "#/$defs/operationParameters"
+          },
+          "semantic_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "refinement_requirements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/refinementRequirement"
+            }
+          },
+          "indexing_relation_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "indexing_relations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/indexingRelation"
+      }
+    },
+    "dataflow_edges": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "edge_id",
+          "from_kind",
+          "from_ref",
+          "to_kind",
+          "to_ref",
+          "summary"
+        ],
+        "properties": {
+          "edge_id": {
+            "type": "string"
+          },
+          "from_kind": {
+            "type": "string",
+            "enum": [
+              "state_family",
+              "operator_template"
+            ]
+          },
+          "from_ref": {
+            "type": "string"
+          },
+          "to_kind": {
+            "type": "string",
+            "enum": [
+              "state_family",
+              "operator_template"
+            ]
+          },
+          "to_ref": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "observation_points": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "point_id",
+          "ref_kind",
+          "ref",
+          "role",
+          "summary"
+        ],
+        "properties": {
+          "point_id": {
+            "type": "string"
+          },
+          "ref_kind": {
+            "type": "string",
+            "enum": [
+              "state_family",
+              "operator_template"
+            ]
+          },
+          "ref": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "objective_surface",
+              "validation_checkpoint",
+              "report_checkpoint",
+              "custom"
+            ]
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "provenance_and_gaps": {
+      "type": "object",
+      "required": [
+        "derived_from",
+        "semantic_layers_not_yet_attached",
+        "blocking_gaps",
+        "ready_for_semantic_refinement"
+      ],
+      "properties": {
+        "derived_from": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "semantic_layers_not_yet_attached": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocking_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ready_for_semantic_refinement": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

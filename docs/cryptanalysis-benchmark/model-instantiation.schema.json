@@ -1,0 +1,721 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ModelInstantiation",
+  "$defs": {
+    "sourceRef": {
+      "type": "object",
+      "required": [
+        "kind",
+        "label"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "attack_paper",
+            "primitive_paper",
+            "schema",
+            "note"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "indexDimension": {
+      "type": "object",
+      "required": [
+        "name",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "start": {
+          "type": "integer"
+        },
+        "end": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "variableFamily": {
+      "type": "object",
+      "required": [
+        "family_id",
+        "variable_kind",
+        "binary",
+        "naming_pattern",
+        "index_dimensions",
+        "semantic_role"
+      ],
+      "properties": {
+        "family_id": {
+          "type": "string"
+        },
+        "variable_kind": {
+          "type": "string",
+          "enum": [
+            "difference_bit",
+            "activity_marker",
+            "xor_dummy",
+            "derived_result",
+            "custom"
+          ]
+        },
+        "binary": {
+          "type": "boolean"
+        },
+        "naming_pattern": {
+          "type": "string"
+        },
+        "index_dimensions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/indexDimension"
+          }
+        },
+        "semantic_role": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "instanceScope": {
+      "type": "object",
+      "properties": {
+        "round_start": {
+          "type": "integer"
+        },
+        "round_end": {
+          "type": "integer"
+        },
+        "update_start": {
+          "type": "integer"
+        },
+        "update_end": {
+          "type": "integer"
+        },
+        "bit_start": {
+          "type": "integer"
+        },
+        "bit_end": {
+          "type": "integer"
+        },
+        "sbox_start": {
+          "type": "integer"
+        },
+        "sbox_end": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "constraintBlock": {
+      "type": "object",
+      "required": [
+        "block_id",
+        "family",
+        "applies_to_unit_ids",
+        "binding_roles",
+        "instance_scope",
+        "semantic_summary"
+      ],
+      "properties": {
+        "block_id": {
+          "type": "string"
+        },
+        "family": {
+          "type": "string",
+          "enum": [
+            "key_extract_equality",
+            "xor_bit_exact",
+            "sbox_activity_input_nonzero",
+            "sbox_bijective_nonzero",
+            "sbox_valid_cutting_off",
+            "permutation_equality",
+            "rotation_equality",
+            "register_copy_equality",
+            "constant_xor_invariance_copy",
+            "custom"
+          ]
+        },
+        "applies_to_unit_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "binding_roles": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "instance_scope": {
+          "$ref": "#/$defs/instanceScope"
+        },
+        "index_mapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "local_rule_pack_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "paper_equation_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "semantic_summary": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "selector": {
+      "type": "object",
+      "properties": {
+        "round": {
+          "type": "integer"
+        },
+        "update": {
+          "type": "integer"
+        },
+        "bit_start": {
+          "type": "integer"
+        },
+        "bit_end": {
+          "type": "integer"
+        },
+        "sbox_start": {
+          "type": "integer"
+        },
+        "sbox_end": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaryCondition": {
+      "type": "object",
+      "required": [
+        "condition_id",
+        "condition_type",
+        "variable_family_ref",
+        "selector",
+        "relation",
+        "value",
+        "rationale"
+      ],
+      "properties": {
+        "condition_id": {
+          "type": "string"
+        },
+        "condition_type": {
+          "type": "string",
+          "enum": [
+            "nonzero_sum",
+            "fixed_zero",
+            "fixed_sum",
+            "custom"
+          ]
+        },
+        "variable_family_ref": {
+          "type": "string"
+        },
+        "selector": {
+          "$ref": "#/$defs/selector"
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            ">=",
+            "<=",
+            "="
+          ]
+        },
+        "value": {},
+        "rationale": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "objectiveTermRef": {
+      "type": "object",
+      "required": [
+        "variable_family_ref",
+        "aggregation"
+      ],
+      "properties": {
+        "variable_family_ref": {
+          "type": "string"
+        },
+        "aggregation": {
+          "type": "string",
+          "enum": [
+            "sum_all_instances",
+            "sum_selected_instances"
+          ]
+        },
+        "selector": {
+          "$ref": "#/$defs/selector"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "objective": {
+      "type": "object",
+      "required": [
+        "sense",
+        "term_refs"
+      ],
+      "properties": {
+        "sense": {
+          "type": "string",
+          "enum": [
+            "minimize",
+            "maximize"
+          ]
+        },
+        "term_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/objectiveTermRef"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputCaptureField": {
+      "type": "object",
+      "required": [
+        "field_id",
+        "field_type",
+        "required"
+      ],
+      "properties": {
+        "field_id": {
+          "type": "string"
+        },
+        "field_type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "path"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "expectedOutput": {
+      "type": "object",
+      "required": [
+        "output_kind",
+        "symbolic_name",
+        "paper_location",
+        "provenance"
+      ],
+      "properties": {
+        "output_kind": {
+          "type": "string",
+          "enum": [
+            "lower_bound",
+            "upper_bound",
+            "report_fact",
+            "custom"
+          ]
+        },
+        "symbolic_name": {
+          "type": "string"
+        },
+        "expected_value": {},
+        "paper_location": {
+          "type": "string"
+        },
+        "provenance": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "solverUnit": {
+      "type": "object",
+      "required": [
+        "unit_id",
+        "unit_kind",
+        "phase_ref",
+        "round_scope",
+        "variable_family_refs",
+        "constraint_block_refs",
+        "objective",
+        "boundary_conditions",
+        "emission_target_format",
+        "output_capture",
+        "expected_output"
+      ],
+      "properties": {
+        "unit_id": {
+          "type": "string"
+        },
+        "unit_kind": {
+          "const": "solver_model"
+        },
+        "phase_ref": {
+          "type": "string"
+        },
+        "round_scope": {
+          "type": "object",
+          "required": [
+            "from_round",
+            "to_round"
+          ],
+          "properties": {
+            "from_round": {
+              "type": "integer"
+            },
+            "to_round": {
+              "type": "integer"
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "variable_family_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "constraint_block_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "objective": {
+          "$ref": "#/$defs/objective"
+        },
+        "boundary_conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/boundaryCondition"
+          }
+        },
+        "emission_target_format": {
+          "type": "string",
+          "enum": [
+            "lp",
+            "mps",
+            "json",
+            "custom"
+          ]
+        },
+        "output_capture": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/outputCaptureField"
+          }
+        },
+        "expected_output": {
+          "$ref": "#/$defs/expectedOutput"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "derivationInputBinding": {
+      "type": "object",
+      "required": [
+        "from_unit_id",
+        "symbol",
+        "value_source"
+      ],
+      "properties": {
+        "from_unit_id": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "value_source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "derivedUnit": {
+      "type": "object",
+      "required": [
+        "unit_id",
+        "unit_kind",
+        "phase_ref",
+        "round_scope",
+        "depends_on_unit_ids",
+        "derivation",
+        "output_capture",
+        "expected_output"
+      ],
+      "properties": {
+        "unit_id": {
+          "type": "string"
+        },
+        "unit_kind": {
+          "const": "derived_result"
+        },
+        "phase_ref": {
+          "type": "string"
+        },
+        "round_scope": {
+          "type": "object",
+          "required": [
+            "from_round",
+            "to_round"
+          ],
+          "properties": {
+            "from_round": {
+              "type": "integer"
+            },
+            "to_round": {
+              "type": "integer"
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "depends_on_unit_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "derivation": {
+          "type": "object",
+          "required": [
+            "rule_id",
+            "expression",
+            "input_bindings"
+          ],
+          "properties": {
+            "rule_id": {
+              "type": "string"
+            },
+            "expression": {
+              "type": "string"
+            },
+            "input_bindings": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/derivationInputBinding"
+              }
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "output_capture": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/outputCaptureField"
+          }
+        },
+        "expected_output": {
+          "$ref": "#/$defs/expectedOutput"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "verificationCheck": {
+      "type": "object",
+      "required": [
+        "check_id",
+        "kind",
+        "target",
+        "expectation"
+      ],
+      "properties": {
+        "check_id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "json_schema",
+            "objective_compare",
+            "formula_match",
+            "provenance_tag",
+            "custom"
+          ]
+        },
+        "target": {
+          "type": "string"
+        },
+        "expectation": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "instantiation_id",
+    "target_primitive_id",
+    "target_attack_id",
+    "target_global_plan_id",
+    "backend",
+    "source_refs",
+    "variable_families",
+    "constraint_blocks",
+    "execution_units",
+    "verification_contract"
+  ],
+  "properties": {
+    "instantiation_id": {
+      "type": "string"
+    },
+    "target_primitive_id": {
+      "type": "string"
+    },
+    "target_attack_id": {
+      "type": "string"
+    },
+    "target_global_plan_id": {
+      "type": "string"
+    },
+    "backend": {
+      "type": "string",
+      "enum": [
+        "milp",
+        "sat",
+        "smt",
+        "cp",
+        "custom"
+      ]
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/sourceRef"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "variable_families": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/variableFamily"
+      }
+    },
+    "constraint_blocks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/constraintBlock"
+      }
+    },
+    "execution_units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/solverUnit"
+          },
+          {
+            "$ref": "#/$defs/derivedUnit"
+          }
+        ]
+      }
+    },
+    "verification_contract": {
+      "type": "object",
+      "required": [
+        "checks",
+        "unresolved_policy"
+      ],
+      "properties": {
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/verificationCheck"
+          }
+        },
+        "unresolved_policy": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

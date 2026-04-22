@@ -1,0 +1,69 @@
+{
+  "reference_id": "eprint-2016-407.frontend-reference.v0",
+  "status": "active",
+  "paper_id": "eprint-2016-407",
+  "paper_title": "MILP-Based Automatic Search Algorithms for Differential and Linear Trails for Speck",
+  "wave": "wave-1",
+  "primitive_family": "arx",
+  "attack_family": "differential",
+  "stress_points": [
+    "modular addition under xor differential analysis",
+    "ARX rotations",
+    "rolling key-schedule indexing",
+    "SPN versus ARX frontend fitness"
+  ],
+  "raw_bundle": {
+    "label": "Speck bundle",
+    "path": "docs/cryptanalysis-benchmark/examples/eprint-2016-407.speck.bundle.json"
+  },
+  "frontend_layers": {
+    "input_normalization": {
+      "status": "available",
+      "artifacts": [
+        {
+          "label": "Speck bundle",
+          "path": "docs/cryptanalysis-benchmark/examples/eprint-2016-407.speck.bundle.json"
+        }
+      ],
+      "notes": "Bundle exists for the current wave-1 ARX case."
+    },
+    "algorithm_description": {
+      "status": "golden",
+      "artifacts": [
+        {
+          "label": "Speck32/64 algorithm description",
+          "path": "docs/cryptanalysis-benchmark/examples/eprint-2016-407.speck32-64.algorithm-description.v0.json"
+        }
+      ],
+      "notes": "Curated algorithm description exists and already exposes add_mod semantic hooks and rolling schedule metadata."
+    },
+    "structural_ir": {
+      "status": "golden",
+      "artifacts": [
+        {
+          "label": "Speck32/64 structural IR",
+          "path": "docs/cryptanalysis-benchmark/trials/eprint-2016-407/structural-ir.speck32-64.r9.v0.json"
+        }
+      ],
+      "notes": "Curated structural IR exists for the 9-round Speck32/64 checkpoint."
+    }
+  },
+  "downstream_status": {
+    "status": "semantic_blocked",
+    "artifacts": [
+      {
+        "label": "Speck semantic attachment",
+        "path": "docs/cryptanalysis-benchmark/trials/eprint-2016-407/semantic-attachment.speck32-64.r9.v0.json"
+      }
+    ],
+    "notes": "Frontend is in place, but modular-add local semantics are still missing, so execution remains blocked honestly."
+  },
+  "current_frontend_ceiling": "structural_ir_ready",
+  "next_priority": "Add grounded ARX modular-add rule packs so the existing frontend artifacts can descend into model instantiation.",
+  "known_gaps": [
+    "No local semantics for arx_add_mod_xor_differential yet.",
+    "No model instantiation or execution-backed lane yet.",
+    "Current downstream blocker is semantic, not frontend structure."
+  ],
+  "notes": "P3 is the key ARX stress case: frontend mostly exists, but semantics and backend support do not."
+}

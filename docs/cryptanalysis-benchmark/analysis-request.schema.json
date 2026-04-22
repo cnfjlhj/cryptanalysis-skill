@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CryptanalysisAnalysisRequest",
+  "type": "object",
+  "required": [
+    "requestId",
+    "bundleState"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string"
+    },
+    "bundleState": {
+      "type": "string",
+      "enum": [
+        "raw-input",
+        "incomplete-bundle",
+        "frozen-bundle"
+      ]
+    },
+    "paperId": {
+      "type": "string"
+    },
+    "paperTitle": {
+      "type": "string"
+    },
+    "primitiveFamily": {
+      "type": "string"
+    },
+    "primitiveId": {
+      "type": "string"
+    },
+    "attackFamily": {
+      "type": "string"
+    },
+    "differenceModel": {
+      "type": "string"
+    },
+    "targetCaseId": {
+      "type": "string"
+    },
+    "targetClaim": {
+      "type": "string"
+    },
+    "comparisonPoint": {
+      "type": "string"
+    },
+    "claimKind": {
+      "type": "string"
+    },
+    "roundEnd": {
+      "type": "integer"
+    },
+    "sboxModel": {
+      "type": "string"
+    },
+    "sourceBundle": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

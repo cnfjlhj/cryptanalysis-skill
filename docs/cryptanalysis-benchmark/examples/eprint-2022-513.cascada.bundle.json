@@ -1,0 +1,20 @@
+{
+  "bundle_id": "eprint-2022-513-cascada",
+  "source_items": [
+    {
+      "id": "attack-paper",
+      "kind": "attack_paper_url",
+      "label": "eprint-2022-513",
+      "role": "attack-paper",
+      "uri": "https://eprint.iacr.org/2022/513"
+    }
+  ],
+  "paper": {
+    "id": "eprint-2022-513",
+    "title": "CASCADA: Characteristic Automated Search of Cryptographic Algorithms for Distinguishing Attacks"
+  },
+  "attack": {
+    "claim_kind": "distinguisher_rounds"
+  },
+  "notes": "Framework-oriented example bundle. Intentionally incomplete to exercise the intake questions path."
+}

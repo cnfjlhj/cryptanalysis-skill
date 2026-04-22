@@ -1,0 +1,97 @@
+{
+  "attachment_id": "present80-r5-rkdiff.structural-ir.v0.semantic-attachment.v0",
+  "status": "reviewable",
+  "source_structural_ir_id": "present80-r5-rkdiff.structural-ir.v0",
+  "analysis_context": {
+    "primitive_id": "present80",
+    "attack_family": "related_key_differential",
+    "semantic_domain": "xor_differential",
+    "granularity": "bit",
+    "target_round_start": 1,
+    "target_round_end": 5,
+    "notes": "This attachment manifest records only semantic resolution status, not backend block synthesis."
+  },
+  "loaded_rule_packs": [
+    {
+      "rule_pack_id": "present-sbox-xor-diff-cdp-v1",
+      "source_path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/local-semantics.present-sbox.cdp.json",
+      "target_primitive_id": "present80",
+      "operator_type": "sbox",
+      "component_name": "present_sbox",
+      "semantic_domain": "xor_differential",
+      "granularity": "bit",
+      "exactness": "valid_cutting_off",
+      "rule_families": [
+        "present_sbox_differential_or_activity"
+      ]
+    }
+  ],
+  "template_attachments": [
+    {
+      "attachment_entry_id": "enc_sbox_layer:enc_sbox_activity",
+      "template_ref": "enc_sbox_layer",
+      "requirement_slot_id": "enc_sbox_activity",
+      "op_type": "sbox",
+      "rule_family": "present_sbox_differential_or_activity",
+      "component_name_hint": "present_sbox",
+      "input_width_bits": 4,
+      "output_width_bits": 4,
+      "resolution_status": "resolved",
+      "matched_rule_pack_refs": [
+        "present-sbox-xor-diff-cdp-v1"
+      ],
+      "selected_rule_pack_ref": "present-sbox-xor-diff-cdp-v1",
+      "matching_axes": [
+        "operator_type",
+        "semantic_domain",
+        "rule_family",
+        "input_width_bits",
+        "output_width_bits",
+        "component_name"
+      ],
+      "summary": "Resolved enc_sbox_layer to local rule pack present-sbox-xor-diff-cdp-v1.",
+      "notes": "Later semantic refinement must attach the PRESENT S-box differential/activity rule pack to this template."
+    },
+    {
+      "attachment_entry_id": "ks_top_nibble_sbox:ks_sbox_related_key",
+      "template_ref": "ks_top_nibble_sbox",
+      "requirement_slot_id": "ks_sbox_related_key",
+      "op_type": "sbox",
+      "rule_family": "present_sbox_differential_or_activity",
+      "component_name_hint": "present_sbox",
+      "input_width_bits": 4,
+      "output_width_bits": 4,
+      "resolution_status": "resolved",
+      "matched_rule_pack_refs": [
+        "present-sbox-xor-diff-cdp-v1"
+      ],
+      "selected_rule_pack_ref": "present-sbox-xor-diff-cdp-v1",
+      "matching_axes": [
+        "operator_type",
+        "semantic_domain",
+        "rule_family",
+        "input_width_bits",
+        "output_width_bits",
+        "component_name"
+      ],
+      "summary": "Resolved ks_top_nibble_sbox to local rule pack present-sbox-xor-diff-cdp-v1.",
+      "notes": "Later semantic refinement must attach PRESENT S-box semantics to the key-schedule nonlinear template."
+    }
+  ],
+  "resolution_summary": {
+    "total_requirements": 2,
+    "resolved_count": 2,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "ready_for_model_instantiation": true
+  },
+  "provenance_and_gaps": {
+    "derived_from": [
+      "docs/cryptanalysis-benchmark/trials/eprint-2013-676/structural-ir.present80.r5.v0.json",
+      "docs/cryptanalysis-benchmark/trials/eprint-2013-676/local-semantics.present-sbox.cdp.json"
+    ],
+    "unresolved_attachment_ids": [],
+    "ready_for_model_instantiation": true,
+    "notes": "All declared refinement requirements resolved against the loaded local rule packs."
+  }
+}

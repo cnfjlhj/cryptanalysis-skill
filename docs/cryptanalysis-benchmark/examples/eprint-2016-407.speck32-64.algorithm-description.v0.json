@@ -1,0 +1,391 @@
+{
+  "algorithm_description_id": "eprint-2016-407.speck32-64.r9-diff.algorithm-description.v0",
+  "status": "reviewable",
+  "source_materials": [
+    {
+      "id": "attack-paper",
+      "kind": "attack_paper",
+      "label": "ePrint 2016/407",
+      "role": "attack-claim-source",
+      "url": "https://eprint.iacr.org/2016/407",
+      "location": "Table 2; Section 5; Table 3",
+      "notes": "Provides the paper-facing checkpoint and the ARX-oriented differential-search framing for Speck."
+    },
+    {
+      "id": "primitive-paper",
+      "kind": "primitive_paper",
+      "label": "ePrint 2013/404 Speck",
+      "role": "primitive-definition-source",
+      "url": "https://eprint.iacr.org/2013/404",
+      "location": "Section 4, Figure 4.1, Figure 4.3, Figure 4.4",
+      "notes": "Defines the Speck round function, rotation constants, and key schedule."
+    },
+    {
+      "id": "repo-bundle",
+      "kind": "note",
+      "label": "eprint-2016-407.speck.bundle.json",
+      "role": "repo-context-reference",
+      "path": "docs/cryptanalysis-benchmark/examples/eprint-2016-407.speck.bundle.json",
+      "notes": "Current repository-side intake example for the same paper family."
+    }
+  ],
+  "primitive_overview": {
+    "primitive_id": "speck32_64",
+    "primitive_name": "Speck-32/64",
+    "variant": "32-bit block / 64-bit key variant",
+    "family": "arx",
+    "block_size_bits": 32,
+    "key_size_bits": 64,
+    "state_size_bits": 32,
+    "round_count": 22,
+    "round_index_origin": 0,
+    "state_layout_summary": "The encryption state is split into two 16-bit words usually denoted as the left and right branches. The key material for Speck-32/64 is represented by one current round-key word together with a rolling sequence of three companion key words.",
+    "round_structure_summary": "Each encryption round rotates the left word right by 7, adds it modulo 2^16 to the right word, xors the round key into the result, rotates the right word left by 2, and xors the rotated right word with the updated left word.",
+    "key_schedule_summary": "For Speck-32/64 the 64-bit key is viewed as four 16-bit words. Each key-schedule round rotates one schedule word right by 7, adds it modulo 2^16 to the current round key, xors in the round index constant, rotates the current round key left by 2, and xors it with the updated schedule word to obtain the next round key.",
+    "notes": "This overview keeps the ARX structure visible while remaining earlier than a full operator-parameterized primitive spec."
+  },
+  "analysis_task": {
+    "attack_family": "differential",
+    "security_goal": "paper-checkpoint validation for a published ARX differential characteristic summary entry",
+    "semantic_domain": "xor_differential",
+    "granularity": "word",
+    "exactness_goal": "exact_under_paper_model",
+    "target_round_start": 0,
+    "target_round_end": 8,
+    "objective_metric": "negative log2 differential probability of a single differential characteristic",
+    "objective_direction": "minimize",
+    "scenario_flags": {
+      "related_key": false,
+      "distinguisher_only": true,
+      "key_recovery_stage_present": false
+    },
+    "task_summary": "Check whether the algorithm-description surface can state a Speck-32/64 xor-differential characteristic target clearly enough for later ARX-specific IR projection and paper comparison."
+  },
+  "validation_anchor": {
+    "paper_id": "eprint-2016-407",
+    "paper_title": "MILP-Based Automatic Search Algorithms for Differential and Linear Trails for Speck",
+    "location": "Table 2, Speck32 differential-characteristic summary row",
+    "claim": "Table 2 reports a 9-round Speck32 differential characteristic with log2 p = -30 in the paper's search model.",
+    "claim_type": "trail_weight",
+    "expected_value_type": "reported_exact_under_paper_model",
+    "expected_value": -30,
+    "comparison_metric": "negative log2 probability for the summarized 9-round Speck32 differential characteristic",
+    "notes": "The paper later notes that practical differential probabilities can deviate because the MILP search assumes independent modular additions and independent rounds."
+  },
+  "structured_description": {
+    "state_containers": [
+      {
+        "name": "left_word",
+        "kind": "word",
+        "width_bits": 16,
+        "count": 1,
+        "role": "left encryption branch"
+      },
+      {
+        "name": "right_word",
+        "kind": "word",
+        "width_bits": 16,
+        "count": 1,
+        "role": "right encryption branch"
+      },
+      {
+        "name": "round_key",
+        "kind": "word",
+        "width_bits": 16,
+        "count": 1,
+        "role": "current round-key word used by the encryption round"
+      },
+      {
+        "name": "schedule_l_words",
+        "kind": "register",
+        "width_bits": 16,
+        "count": 3,
+        "role": "rolling sequence of auxiliary key-schedule words"
+      },
+      {
+        "name": "round_index",
+        "kind": "bitvector",
+        "width_bits": 5,
+        "count": 1,
+        "role": "round constant injected during key expansion"
+      }
+    ],
+    "schedule_indexing_model": {
+      "style": "rolling_queue",
+      "queue_length": 3,
+      "active_element": "round_key plus schedule_l_words[i mod 3]",
+      "movement_rule": "At key-schedule round i, the selected auxiliary word is schedule_l_words[i mod 3]. That slot is updated through rotate/add/xor, the current round key is transformed separately, and the resulting next round key becomes the active round_key for round i+1. The selected queue slot advances cyclically to schedule_l_words[(i+1) mod 3] on the next round.",
+      "summary": "Speck-32/64 uses one current round-key word together with a cyclic queue of three auxiliary schedule words.",
+      "evidence": [
+        "ePrint 2013/404 Section 4"
+      ]
+    },
+    "round_steps": [
+      {
+        "step_id": "rotate_left_word_right",
+        "step_order": 1,
+        "name": "Rotate left branch right",
+        "op_type": "rotate_right",
+        "summary": "Rotate the left 16-bit state word right by 7 positions.",
+        "operation_parameters": {
+          "rotation_amount": 7,
+          "word_size_bits": 16
+        },
+        "inputs": [
+          "left_word"
+        ],
+        "outputs": [
+          "left_word_rotated"
+        ],
+        "evidence": [
+          "ePrint 2013/404 Section 4",
+          "ePrint 2016/407 Table 3"
+        ]
+      },
+      {
+        "step_id": "add_branches",
+        "step_order": 2,
+        "name": "Modular add branches",
+        "op_type": "add_mod",
+        "summary": "Add the rotated left word and the right word modulo 2^16.",
+        "operation_parameters": {
+          "modulus": "2^16",
+          "word_size_bits": 16
+        },
+        "semantic_refinement_requirements": [
+          {
+            "kind": "local_rule_pack",
+            "domain": "xor_differential",
+            "rule_family": "arx_add_mod_xor_differential",
+            "required_for": "exact differential-weight propagation through modular addition",
+            "summary": "This step needs xor-differential modular-add semantics rather than a purely structural binary-add node."
+          }
+        ],
+        "inputs": [
+          "left_word_rotated",
+          "right_word"
+        ],
+        "outputs": [
+          "sum_word"
+        ],
+        "evidence": [
+          "ePrint 2013/404 Section 4"
+        ]
+      },
+      {
+        "step_id": "xor_round_key",
+        "step_order": 3,
+        "name": "Xor round key",
+        "op_type": "xor",
+        "summary": "Xor the current 16-bit round key into the modular-add result to produce the next left branch.",
+        "operation_parameters": {
+          "word_size_bits": 16
+        },
+        "inputs": [
+          "sum_word",
+          "round_key"
+        ],
+        "outputs": [
+          "left_word_next"
+        ],
+        "evidence": [
+          "ePrint 2013/404 Figure 4.1"
+        ]
+      },
+      {
+        "step_id": "rotate_right_word_left",
+        "step_order": 4,
+        "name": "Rotate right branch left",
+        "op_type": "rotate_left",
+        "summary": "Rotate the right 16-bit state word left by 2 positions.",
+        "operation_parameters": {
+          "rotation_amount": 2,
+          "word_size_bits": 16
+        },
+        "inputs": [
+          "right_word"
+        ],
+        "outputs": [
+          "right_word_rotated"
+        ],
+        "evidence": [
+          "ePrint 2013/404 Section 4",
+          "ePrint 2016/407 Table 3"
+        ]
+      },
+      {
+        "step_id": "xor_branches",
+        "step_order": 5,
+        "name": "Xor updated left branch into rotated right branch",
+        "op_type": "xor",
+        "summary": "Xor the rotated right word with the updated left branch to produce the next right branch.",
+        "operation_parameters": {
+          "word_size_bits": 16
+        },
+        "inputs": [
+          "right_word_rotated",
+          "left_word_next"
+        ],
+        "outputs": [
+          "right_word_next"
+        ],
+        "evidence": [
+          "ePrint 2013/404 Figure 4.1"
+        ]
+      }
+    ],
+    "key_schedule_steps": [
+      {
+        "step_id": "ks_rotate_schedule_word",
+        "step_order": 1,
+        "name": "Rotate schedule word right",
+        "op_type": "rotate_right",
+        "summary": "Rotate the selected 16-bit schedule word right by 7 positions before mixing it with the current round key.",
+        "operation_parameters": {
+          "rotation_amount": 7,
+          "word_size_bits": 16,
+          "selected_slot_expression": "schedule_l_words[i mod 3]"
+        },
+        "indexing_effect": {
+          "style": "queue_slot_select",
+          "selected_element": "schedule_l_words[i mod 3]",
+          "writeback_target": "selected schedule slot",
+          "movement": "selection depends on i mod 3; queue advance happens only after the current schedule round finishes",
+          "produces_round_key": false,
+          "summary": "Choose one cyclic queue slot as the active schedule word for the current round."
+        },
+        "evidence": [
+          "ePrint 2013/404 Section 4"
+        ]
+      },
+      {
+        "step_id": "ks_add_with_round_key",
+        "step_order": 2,
+        "name": "Add schedule word and current round key",
+        "op_type": "add_mod",
+        "summary": "Add the rotated schedule word and the current round key modulo 2^16.",
+        "operation_parameters": {
+          "modulus": "2^16",
+          "word_size_bits": 16
+        },
+        "semantic_refinement_requirements": [
+          {
+            "kind": "local_rule_pack",
+            "domain": "xor_differential",
+            "rule_family": "arx_add_mod_xor_differential",
+            "required_for": "exact related state/key-difference propagation inside the Speck key schedule",
+            "summary": "The key-schedule modular addition needs the same xor-differential modular-add refinement hook as the encryption round."
+          }
+        ],
+        "indexing_effect": {
+          "style": "queue_slot_update_in_progress",
+          "selected_element": "schedule_l_words[i mod 3]",
+          "writeback_target": "selected schedule slot",
+          "movement": "the selected slot is being updated for the current round; slot advancement is not committed yet",
+          "produces_round_key": false,
+          "summary": "Keep the evolving schedule word bound to the same cyclic slot while modular-add semantics are applied."
+        },
+        "evidence": [
+          "ePrint 2013/404 Section 4"
+        ]
+      },
+      {
+        "step_id": "ks_xor_round_index",
+        "step_order": 3,
+        "name": "Inject round index",
+        "op_type": "xor",
+        "summary": "Xor the round index constant into the updated schedule word.",
+        "operation_parameters": {
+          "word_size_bits": 16,
+          "constant_source": "round_index"
+        },
+        "indexing_effect": {
+          "style": "queue_slot_update_in_progress",
+          "selected_element": "schedule_l_words[i mod 3]",
+          "writeback_target": "selected schedule slot",
+          "movement": "the same cyclic slot remains active until the next round key is finalized",
+          "produces_round_key": false,
+          "summary": "The current queue slot keeps being updated; the slot identity still depends on i mod 3."
+        },
+        "evidence": [
+          "ePrint 2013/404 Section 4"
+        ]
+      },
+      {
+        "step_id": "ks_rotate_round_key",
+        "step_order": 4,
+        "name": "Rotate current round key left",
+        "op_type": "rotate_left",
+        "summary": "Rotate the current round-key word left by 2 positions.",
+        "operation_parameters": {
+          "rotation_amount": 2,
+          "word_size_bits": 16
+        },
+        "indexing_effect": {
+          "style": "round_key_update_in_progress",
+          "selected_element": "round_key",
+          "writeback_target": "round_key",
+          "movement": "the current round key is transformed locally before the next-round handoff",
+          "produces_round_key": false,
+          "summary": "The active round-key word is updated separately from the queue slot before next-round promotion."
+        },
+        "evidence": [
+          "ePrint 2013/404 Section 4"
+        ]
+      },
+      {
+        "step_id": "ks_xor_to_next_round_key",
+        "step_order": 5,
+        "name": "Generate next round key",
+        "op_type": "xor",
+        "summary": "Xor the rotated round-key word with the updated schedule word to produce the next round key.",
+        "operation_parameters": {
+          "word_size_bits": 16
+        },
+        "indexing_effect": {
+          "style": "queue_advance_and_round_key_promotion",
+          "selected_element": "schedule_l_words[i mod 3]",
+          "writeback_target": "schedule_l_words[i mod 3] and round_key",
+          "movement": "the updated schedule word is committed to the selected cyclic slot, the xor result becomes round_key for round i+1, and the active slot advances to schedule_l_words[(i+1) mod 3]",
+          "produces_round_key": true,
+          "summary": "Finish the current key-schedule round by promoting the newly derived word to the next round key and advancing the cyclic slot selection."
+        },
+        "evidence": [
+          "ePrint 2013/404 Section 4"
+        ]
+      }
+    ],
+    "operator_inventory": [
+      "rotate_right",
+      "add_mod",
+      "xor",
+      "rotate_left"
+    ]
+  },
+  "provenance_and_gaps": {
+    "explicit_facts": [
+      "Speck-32/64 uses a 32-bit block split into two 16-bit words and a 64-bit key.",
+      "Speck-32/64 uses 22 rounds with rotation constants alpha = 7 and beta = 2.",
+      "The Speck round function is ARX-based and uses rotate, modular addition, and xor operations.",
+      "The Speck key schedule for the 32/64 variant evolves four 16-bit key words and injects the round index.",
+      "Table 2 of ePrint 2016/407 reports a 9-round Speck32 differential characteristic with log2 probability -30."
+    ],
+    "inferred_facts": [
+      "For algorithm-description purposes, the most stable paper-facing validation anchor is the Table 2 summary row rather than a fully reconstructed multi-page trail listing.",
+      "The current task is best represented as a word-oriented xor-differential trail-weight check instead of a full key-recovery attack reconstruction.",
+      "The round-key word and the rolling schedule words should be kept separate at the description layer even though later IR may choose a different normalized storage form."
+    ],
+    "unresolved_questions": [
+      "Should a future algorithm-description layer distinguish between summary checkpoints such as Table 2 and fully enumerated trail tables such as Table 4?",
+      "How should ARX-specific assumptions, such as the independence assumptions used by the MILP search, be represented explicitly instead of being buried in free-text notes?",
+      "How should the rolling queue structure of Speck key words be encoded so that IR projection does not have to guess index movement?"
+    ],
+    "blocking_gaps": [
+      "The current schema now carries the needed fields, but the parameter vocabulary is still permissive and not yet canonical across ARX families.",
+      "Semantic refinement requirements can now be declared, but the compiler still lacks a deterministic resolver from declared rule family to concrete local semantics.",
+      "The rolling-queue schedule model is now explicit, but its projection recipe into structural IR state families is still a next-stage design task."
+    ],
+    "ready_for_ir": false,
+    "notes": "This ARX example is intentionally paper-facing and reviewable. It exposes schema pressure around operation parameters and word-level schedule structure without prematurely collapsing into backend model details."
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "plan_id": "present80-rkdiff24-upper-bound-v1",
+  "target_primitive_id": "present80",
+  "target_attack_id": "present80-rkdiff-characteristic-upper-bound-24r",
+  "backend": "milp",
+  "composition_scope": {
+    "include_encryption_process": true,
+    "include_key_schedule": true,
+    "include_key_additions": true,
+    "model_variant": "related_key_security_evaluation",
+    "notes": "The paper states that the related-key model includes variables and constraints from the encryption process, key schedule algorithm, and key addition operations."
+  },
+  "local_rule_packs": [
+    "present-sbox-xor-diff-cdp-v1"
+  ],
+  "phases": [
+    {
+      "phase_id": "p1_compute_12r_lower_bound",
+      "purpose": "Obtain the lower bound on the number of active S-boxes for any consecutive 12-round related-key characteristic of PRESENT-80.",
+      "round_scope": {
+        "from_round": 1,
+        "to_round": 12
+      },
+      "objective": {
+        "kind": "minimize_active_sboxes",
+        "target_expression": "sum(activity markers for all PRESENT S-box instances over the selected 12-round window)",
+        "notes": "Appendix A.1 states that the paper proves at least 16 active S-boxes for any consecutive 12 rounds."
+      },
+      "extra_constraints": [
+        "initial key-register difference must be nonzero in the related-key model",
+        "include CDP constraints for each PRESENT S-box instance"
+      ],
+      "expected_output_kind": "lower_bound"
+    },
+    {
+      "phase_id": "p2_split_24r_into_two_12r_windows",
+      "purpose": "Use the split strategy to lift the 12-round lower bound into a 24-round upper-bound argument.",
+      "round_scope": {
+        "from_round": 1,
+        "to_round": 24
+      },
+      "objective": {
+        "kind": "derive_upper_bound",
+        "target_expression": "(2^-2)^16 * (2^-2)^16",
+        "notes": "This is not an exact characteristic search result; it is a paper-level derivation from two 12-round lower bounds and the single-S-box MDP."
+      },
+      "extra_constraints": [
+        "treat rounds 1-12 and 13-24 as consecutive windows for the split derivation",
+        "use the PRESENT S-box MDP 2^-2"
+      ],
+      "expected_output_kind": "upper_bound"
+    }
+  ],
+  "claim_interpretation": {
+    "result_kind": "upper_bound_from_lower_bounds",
+    "provenance_mode": "split_strategy_derivation",
+    "single_sbox_mdp": "2^-2",
+    "combination_rule": "derive the 24-round bound from two 12-round lower bounds on active S-box counts",
+    "notes": "The selected claim is explicitly a security-evaluation upper bound for the best related-key differential characteristic, not a directly enumerated exact optimum characteristic."
+  },
+  "notes": "This plan captures the paper's modeling and proof shape for the selected PRESENT-80 claim, but does not yet execute the MILP or encode all activity-marker variables explicitly."
+}

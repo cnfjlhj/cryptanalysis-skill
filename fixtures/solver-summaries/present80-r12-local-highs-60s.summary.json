@@ -1,0 +1,22 @@
+{
+  "model_path": "outputs/cryptanalysis-benchmark/eprint-2013-676/p1_compute_12r_lower_bound_model.lp",
+  "time_limit_seconds": 60,
+  "threads": 4,
+  "read_status": "HighsStatus.kOk",
+  "solve_status": "HighsStatus.kWarning",
+  "model_status_code": "HighsModelStatus.kTimeLimit",
+  "model_status_text": "Time limit reached",
+  "num_rows": 10612,
+  "num_cols": 6827,
+  "objective_function_value": 38.000000000000085,
+  "mip_dual_bound": 1,
+  "mip_gap": 0.9736842105263158,
+  "mip_node_count": 2,
+  "simplex_iteration_count": 98215,
+  "primal_solution_status": 2,
+  "dual_solution_status": 0,
+  "max_integrality_violation": 5.728750807065808e-14,
+  "generated_at": "2026-04-22T02:47:09.356420Z",
+  "solution_output_path": "outputs/cryptanalysis-benchmark/eprint-2013-676/p1_compute_12r_lower_bound_model.highs-60s.sol",
+  "log_output_path": "outputs/cryptanalysis-benchmark/eprint-2013-676/p1_compute_12r_lower_bound_model.highs-60s.log"
+}

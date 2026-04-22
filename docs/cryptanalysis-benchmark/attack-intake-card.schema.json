@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttackIntakeCard",
+  "type": "object",
+  "required": [
+    "cardType",
+    "status",
+    "known",
+    "candidateSourceRefs",
+    "missingForRouting",
+    "missingForFullAttackSpec"
+  ],
+  "properties": {
+    "cardType": {
+      "const": "attack-intake-card"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "identified",
+        "needs-identification"
+      ]
+    },
+    "known": {
+      "type": "object",
+      "required": [
+        "attackFamily",
+        "differenceModel",
+        "claimKind",
+        "roundEnd",
+        "targetCaseId",
+        "targetClaim",
+        "comparisonPoint",
+        "granularity",
+        "exactnessGoal",
+        "notes"
+      ],
+      "properties": {
+        "attackFamily": {
+          "type": "string"
+        },
+        "differenceModel": {
+          "type": "string"
+        },
+        "claimKind": {
+          "type": "string"
+        },
+        "roundEnd": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "targetCaseId": {
+          "type": "string"
+        },
+        "targetClaim": {
+          "type": "string"
+        },
+        "comparisonPoint": {
+          "type": "string"
+        },
+        "granularity": {
+          "type": "string"
+        },
+        "exactnessGoal": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "candidateSourceRefs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "label",
+          "path",
+          "uri"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "missingForRouting": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missingForFullAttackSpec": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

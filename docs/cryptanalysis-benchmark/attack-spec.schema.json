@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttackSpec",
+  "type": "object",
+  "required": [
+    "attack_id",
+    "attack_family",
+    "target_primitive_id",
+    "source_refs",
+    "property_domain",
+    "round_scope",
+    "validation_targets"
+  ],
+  "properties": {
+    "attack_id": {
+      "type": "string"
+    },
+    "attack_family": {
+      "type": "string",
+      "enum": [
+        "differential",
+        "linear",
+        "integral",
+        "impossible_differential",
+        "zero_correlation",
+        "differential_linear",
+        "related_key_differential",
+        "other"
+      ]
+    },
+    "target_primitive_id": {
+      "type": "string"
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "label"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "attack_paper",
+              "code",
+              "appendix",
+              "note"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "property_domain": {
+      "type": "object",
+      "required": [
+        "semantic_domain",
+        "granularity"
+      ],
+      "properties": {
+        "semantic_domain": {
+          "type": "string",
+          "enum": [
+            "xor_differential",
+            "linear_mask",
+            "integral_property",
+            "impossible_differential",
+            "zero_correlation",
+            "differential_linear",
+            "custom"
+          ]
+        },
+        "granularity": {
+          "type": "string",
+          "enum": [
+            "bit",
+            "word",
+            "cell",
+            "mixed"
+          ]
+        },
+        "exactness_goal": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "approximate",
+            "upper_bound",
+            "unknown"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "round_scope": {
+      "type": "object",
+      "required": [
+        "from_round",
+        "to_round"
+      ],
+      "properties": {
+        "from_round": {
+          "type": "integer"
+        },
+        "to_round": {
+          "type": "integer"
+        },
+        "counting_convention_notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "scenario_flags": {
+      "type": "object",
+      "properties": {
+        "related_key": {
+          "type": "boolean"
+        },
+        "known_key_schedule_model": {
+          "type": "boolean"
+        },
+        "key_recovery_stage_present": {
+          "type": "boolean"
+        },
+        "distinguisher_only": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "backend_preferences": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "milp",
+          "sat",
+          "smt",
+          "cp",
+          "miqcp",
+          "custom"
+        ]
+      }
+    },
+    "validation_targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "target_id",
+          "claim_type",
+          "expected_value_type"
+        ],
+        "properties": {
+          "target_id": {
+            "type": "string"
+          },
+          "claim_type": {
+            "type": "string",
+            "enum": [
+              "trail_weight",
+              "characteristic",
+              "enumeration_count",
+              "distinguisher_rounds",
+              "data_complexity",
+              "time_complexity",
+              "memory_complexity",
+              "key_recovery_metric",
+              "other"
+            ]
+          },
+          "expected_value_type": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "approximate",
+              "upper_bound",
+              "qualitative"
+            ]
+          },
+          "expected_value": {},
+          "paper_location": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "report_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "explain_key_active_positions",
+          "mark_round_of_decay",
+          "compare_with_paper",
+          "mark_exactness",
+          "list_backend_assumptions"
+        ]
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

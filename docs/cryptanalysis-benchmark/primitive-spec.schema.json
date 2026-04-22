@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrimitiveSpec",
+  "$defs": {
+    "operation": {
+      "type": "object",
+      "required": [
+        "op_id",
+        "op_type",
+        "inputs",
+        "outputs"
+      ],
+      "properties": {
+        "op_id": {
+          "type": "string"
+        },
+        "op_type": {
+          "type": "string",
+          "enum": [
+            "xor",
+            "xnor",
+            "sbox",
+            "permute_bits",
+            "permute_words",
+            "linear_layer",
+            "mix_columns",
+            "add_mod",
+            "sub_mod",
+            "rotate_left",
+            "rotate_right",
+            "shift_left",
+            "shift_right",
+            "and",
+            "or",
+            "not",
+            "key_add",
+            "constant_add",
+            "extract_bits",
+            "custom"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "params": {
+          "type": "object"
+        },
+        "semantic_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "primitive_id",
+    "primitive_name",
+    "family",
+    "source_refs",
+    "state",
+    "round_function"
+  ],
+  "properties": {
+    "primitive_id": {
+      "type": "string"
+    },
+    "primitive_name": {
+      "type": "string"
+    },
+    "family": {
+      "type": "string",
+      "enum": [
+        "spn",
+        "feistel",
+        "arx",
+        "permutation",
+        "hash_component",
+        "other"
+      ]
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "label"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "attack_paper",
+              "primitive_paper",
+              "standard",
+              "code",
+              "appendix",
+              "note"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "block_size_bits": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "key_size_bits": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "state": {
+      "type": "object",
+      "required": [
+        "containers"
+      ],
+      "properties": {
+        "containers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "kind",
+              "width_bits"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "bitvector",
+                  "word",
+                  "cell",
+                  "branch",
+                  "register",
+                  "lane"
+                ]
+              },
+              "width_bits": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "round_function": {
+      "type": "object",
+      "required": [
+        "round_index_origin",
+        "ops"
+      ],
+      "properties": {
+        "round_index_origin": {
+          "type": "integer"
+        },
+        "round_count_claimed": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ops": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/operation"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "key_schedule": {
+      "type": "object",
+      "properties": {
+        "modeled": {
+          "type": "boolean"
+        },
+        "register_name": {
+          "type": "string"
+        },
+        "round_key_output": {
+          "type": "object",
+          "properties": {
+            "source_container": {
+              "type": "string"
+            },
+            "start_bit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_bit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "width_bits": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "bit_order_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_container",
+            "start_bit",
+            "end_bit",
+            "width_bits"
+          ],
+          "additionalProperties": false
+        },
+        "ops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/operation"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

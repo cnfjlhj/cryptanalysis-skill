@@ -1,0 +1,51 @@
+{
+  "attack_id": "present80-rkdiff-characteristic-upper-bound-24r",
+  "attack_family": "related_key_differential",
+  "target_primitive_id": "present80",
+  "source_refs": [
+    {
+      "kind": "attack_paper",
+      "label": "ePrint 2013/676",
+      "location": "Abstract, contribution list, Appendix A.1",
+      "url": "https://eprint.iacr.org/2013/676"
+    }
+  ],
+  "property_domain": {
+    "semantic_domain": "xor_differential",
+    "granularity": "bit",
+    "exactness_goal": "upper_bound"
+  },
+  "round_scope": {
+    "from_round": 1,
+    "to_round": 24,
+    "counting_convention_notes": "The primitive itself has 31 rounds, but the selected validation target is the 24-round reduced PRESENT-80 claim in Appendix A.1."
+  },
+  "scenario_flags": {
+    "related_key": true,
+    "known_key_schedule_model": true,
+    "key_recovery_stage_present": false,
+    "distinguisher_only": false
+  },
+  "backend_preferences": [
+    "milp"
+  ],
+  "validation_targets": [
+    {
+      "target_id": "present80-24r-rkdiff-upper-bound",
+      "claim_type": "other",
+      "expected_value_type": "upper_bound",
+      "expected_value": "2^-64",
+      "paper_location": "Appendix A.1; the paper states at least 16 active S-boxes for any consecutive 12 rounds and derives (2^-2)^16 * (2^-2)^16 = 2^-64."
+    }
+  ],
+  "report_requirements": [
+    "compare_with_paper",
+    "mark_exactness",
+    "list_backend_assumptions"
+  ],
+  "assumptions": [
+    "The paper's selected claim is about the best related-key differential characteristic, not the full differential effect.",
+    "The probability bound is derived via active-S-box lower bounds and the PRESENT maximum differential probability 2^-2 per active S-box.",
+    "A faithful execution path for this target requires a structured related-key model of the 80-bit key schedule."
+  ]
+}

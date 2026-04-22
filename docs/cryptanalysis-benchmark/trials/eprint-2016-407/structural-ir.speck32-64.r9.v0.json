@@ -1,0 +1,757 @@
+{
+  "ir_id": "speck32-64-r9-diff.structural-ir.v0",
+  "status": "reviewable",
+  "source_algorithm_description_id": "eprint-2016-407.speck32-64.r9-diff.algorithm-description.v0",
+  "analysis_context": {
+    "primitive_id": "speck32_64",
+    "attack_family": "differential",
+    "semantic_domain": "xor_differential",
+    "granularity": "word",
+    "exactness_goal": "exact_under_paper_model",
+    "target_round_start": 0,
+    "target_round_end": 8,
+    "objective_metric": "negative log2 differential probability of a single differential characteristic",
+    "objective_direction": "minimize",
+    "scenario_flags": {
+      "related_key": false,
+      "distinguisher_only": true,
+      "key_recovery_stage_present": false
+    },
+    "validation_anchor_ref": "eprint-2016-407 Table 2 Speck32 differential-characteristic summary row",
+    "notes": "This IR is task-scoped to the 9-round paper checkpoint rather than to the full 22-round Speck-32/64 primitive."
+  },
+  "index_domains": [
+    {
+      "domain_id": "rounds_r0_r8",
+      "kind": "round",
+      "start": 0,
+      "end": 8,
+      "purpose": "The 9 encryption rounds inside the current analysis scope."
+    },
+    {
+      "domain_id": "round_boundaries_r0_r9",
+      "kind": "round_boundary",
+      "start": 0,
+      "end": 9,
+      "purpose": "State boundaries before round 0 and after each modeled round."
+    },
+    {
+      "domain_id": "key_updates_u0_u7",
+      "kind": "update",
+      "start": 0,
+      "end": 7,
+      "purpose": "Key-schedule updates needed to derive round keys K1 through K8 from the initial K0."
+    },
+    {
+      "domain_id": "schedule_slots_s0_s2",
+      "kind": "slot",
+      "start": 0,
+      "end": 2,
+      "purpose": "The three auxiliary Speck key-schedule slots that form the rolling queue."
+    },
+    {
+      "domain_id": "word_bits_b0_b15",
+      "kind": "bit",
+      "start": 0,
+      "end": 15,
+      "purpose": "Bit positions of a 16-bit Speck word."
+    }
+  ],
+  "state_families": [
+    {
+      "family_id": "left_word_pre_round",
+      "role": "left_branch_input_boundary",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "round_boundaries_r0_r9"
+      ],
+      "summary": "The left 16-bit encryption branch at the input boundary of each modeled round."
+    },
+    {
+      "family_id": "right_word_pre_round",
+      "role": "right_branch_input_boundary",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "round_boundaries_r0_r9"
+      ],
+      "summary": "The right 16-bit encryption branch at the input boundary of each modeled round."
+    },
+    {
+      "family_id": "left_word_after_rotate",
+      "role": "left_branch_after_rotation",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "summary": "The left branch after the round-local right rotation by 7."
+    },
+    {
+      "family_id": "left_word_after_add",
+      "role": "left_branch_after_modular_add",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "summary": "The intermediate left branch after modular addition and before xor with the round key."
+    },
+    {
+      "family_id": "round_key",
+      "role": "encryption_round_key",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "summary": "The 16-bit round key consumed by each modeled encryption round."
+    },
+    {
+      "family_id": "right_word_after_rotate",
+      "role": "right_branch_after_rotation",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "summary": "The right branch after the round-local left rotation by 2."
+    },
+    {
+      "family_id": "schedule_l_words_pre_update",
+      "role": "rolling_schedule_queue",
+      "container_kind": "word_array",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "key_updates_u0_u7",
+        "schedule_slots_s0_s2"
+      ],
+      "summary": "The three auxiliary Speck schedule words before each modeled key update."
+    },
+    {
+      "family_id": "selected_schedule_word_after_rotate",
+      "role": "selected_schedule_word_after_rotation",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "summary": "The currently selected auxiliary schedule word after the right rotation by 7."
+    },
+    {
+      "family_id": "selected_schedule_word_after_add",
+      "role": "selected_schedule_word_after_modular_add",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "summary": "The selected schedule word after modular addition with the current round key."
+    },
+    {
+      "family_id": "selected_schedule_word_after_index_xor",
+      "role": "selected_schedule_word_after_constant_injection",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "summary": "The selected schedule word after xor with the round index constant."
+    },
+    {
+      "family_id": "round_key_after_rotate",
+      "role": "round_key_after_rotation",
+      "container_kind": "word",
+      "width_bits": 16,
+      "index_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "summary": "The current round key after the key-schedule left rotation by 2."
+    },
+    {
+      "family_id": "round_index_constant",
+      "role": "key_schedule_round_constant",
+      "container_kind": "bitvector",
+      "width_bits": 5,
+      "index_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "summary": "The round index constant injected during each modeled Speck key update."
+    }
+  ],
+  "operator_templates": [
+    {
+      "template_id": "enc_rotate_left_word_right",
+      "name": "Encryption rotate left branch right",
+      "op_type": "rotate_right",
+      "repeat_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "input_family_refs": [
+        "left_word_pre_round"
+      ],
+      "output_family_refs": [
+        "left_word_after_rotate"
+      ],
+      "operator_parameters": {
+        "rotation_amount": 7,
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "arx",
+        "encryption_round_step"
+      ],
+      "summary": "Rotate the left encryption branch right by 7 in each modeled round.",
+      "evidence": [
+        "ePrint 2013/404 Section 4",
+        "ePrint 2016/407 Table 3"
+      ]
+    },
+    {
+      "template_id": "enc_add_branches",
+      "name": "Encryption modular add branches",
+      "op_type": "add_mod",
+      "repeat_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "input_family_refs": [
+        "left_word_after_rotate",
+        "right_word_pre_round"
+      ],
+      "output_family_refs": [
+        "left_word_after_add"
+      ],
+      "operator_parameters": {
+        "modulus": "2^16",
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "arx",
+        "nonlinear_weight_source"
+      ],
+      "refinement_requirements": [
+        {
+          "slot_id": "enc_add_mod_weight",
+          "kind": "local_rule_pack",
+          "domain": "xor_differential",
+          "rule_family": "arx_add_mod_xor_differential",
+          "required_for": "exact differential-weight propagation through the Speck round addition",
+          "summary": "Later semantic refinement must attach xor-differential modular-add semantics to the encryption add_mod template."
+        }
+      ],
+      "summary": "Add the rotated left branch and the right branch modulo 2^16 in each modeled round.",
+      "evidence": [
+        "ePrint 2013/404 Section 4"
+      ]
+    },
+    {
+      "template_id": "enc_xor_round_key",
+      "name": "Encryption xor round key",
+      "op_type": "xor",
+      "repeat_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "input_family_refs": [
+        "left_word_after_add",
+        "round_key"
+      ],
+      "output_family_refs": [
+        "left_word_pre_round"
+      ],
+      "operator_parameters": {
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "arx",
+        "encryption_round_step"
+      ],
+      "summary": "Xor the current round key into the modular-add result to obtain the updated left branch carried to the next round boundary.",
+      "evidence": [
+        "ePrint 2013/404 Figure 4.1"
+      ]
+    },
+    {
+      "template_id": "enc_rotate_right_word_left",
+      "name": "Encryption rotate right branch left",
+      "op_type": "rotate_left",
+      "repeat_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "input_family_refs": [
+        "right_word_pre_round"
+      ],
+      "output_family_refs": [
+        "right_word_after_rotate"
+      ],
+      "operator_parameters": {
+        "rotation_amount": 2,
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "arx",
+        "encryption_round_step"
+      ],
+      "summary": "Rotate the right encryption branch left by 2 in each modeled round.",
+      "evidence": [
+        "ePrint 2013/404 Section 4",
+        "ePrint 2016/407 Table 3"
+      ]
+    },
+    {
+      "template_id": "enc_xor_branches",
+      "name": "Encryption xor branches",
+      "op_type": "xor",
+      "repeat_domain_refs": [
+        "rounds_r0_r8"
+      ],
+      "input_family_refs": [
+        "right_word_after_rotate",
+        "left_word_pre_round"
+      ],
+      "output_family_refs": [
+        "right_word_pre_round"
+      ],
+      "operator_parameters": {
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "arx",
+        "round_boundary_transition"
+      ],
+      "summary": "Xor the rotated right branch with the updated left branch to obtain the next right-boundary value.",
+      "evidence": [
+        "ePrint 2013/404 Figure 4.1"
+      ]
+    },
+    {
+      "template_id": "ks_rotate_schedule_word",
+      "name": "Key schedule rotate selected auxiliary word",
+      "op_type": "rotate_right",
+      "repeat_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "input_family_refs": [
+        "schedule_l_words_pre_update"
+      ],
+      "output_family_refs": [
+        "selected_schedule_word_after_rotate"
+      ],
+      "operator_parameters": {
+        "rotation_amount": 7,
+        "word_size_bits": 16,
+        "selected_slot_expression": "schedule_l_words_pre_update[i mod 3]"
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "rolling_queue"
+      ],
+      "indexing_relation_refs": [
+        "speck_rolling_queue_schedule"
+      ],
+      "summary": "Select the active auxiliary schedule slot by i mod 3 and rotate that word right by 7.",
+      "evidence": [
+        "ePrint 2013/404 Section 4"
+      ]
+    },
+    {
+      "template_id": "ks_add_with_round_key",
+      "name": "Key schedule modular add with round key",
+      "op_type": "add_mod",
+      "repeat_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "input_family_refs": [
+        "selected_schedule_word_after_rotate",
+        "round_key"
+      ],
+      "output_family_refs": [
+        "selected_schedule_word_after_add"
+      ],
+      "operator_parameters": {
+        "modulus": "2^16",
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "rolling_queue",
+        "nonlinear_weight_source"
+      ],
+      "refinement_requirements": [
+        {
+          "slot_id": "ks_add_mod_weight",
+          "kind": "local_rule_pack",
+          "domain": "xor_differential",
+          "rule_family": "arx_add_mod_xor_differential",
+          "required_for": "exact differential propagation through the Speck key-schedule addition",
+          "summary": "Later semantic refinement must attach xor-differential modular-add semantics to the key-schedule add_mod template."
+        }
+      ],
+      "indexing_relation_refs": [
+        "speck_rolling_queue_schedule"
+      ],
+      "summary": "Add the rotated auxiliary schedule word and the current round key modulo 2^16.",
+      "evidence": [
+        "ePrint 2013/404 Section 4"
+      ]
+    },
+    {
+      "template_id": "ks_xor_round_index",
+      "name": "Key schedule xor round index",
+      "op_type": "xor",
+      "repeat_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "input_family_refs": [
+        "selected_schedule_word_after_add",
+        "round_index_constant"
+      ],
+      "output_family_refs": [
+        "selected_schedule_word_after_index_xor"
+      ],
+      "operator_parameters": {
+        "constant_source": "round_index_constant",
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "constant_injection"
+      ],
+      "indexing_relation_refs": [
+        "speck_rolling_queue_schedule"
+      ],
+      "summary": "Xor the round index constant into the selected auxiliary schedule word.",
+      "evidence": [
+        "ePrint 2013/404 Section 4"
+      ]
+    },
+    {
+      "template_id": "ks_rotate_round_key",
+      "name": "Key schedule rotate round key",
+      "op_type": "rotate_left",
+      "repeat_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "input_family_refs": [
+        "round_key"
+      ],
+      "output_family_refs": [
+        "round_key_after_rotate"
+      ],
+      "operator_parameters": {
+        "rotation_amount": 2,
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "round_key_update"
+      ],
+      "indexing_relation_refs": [
+        "speck_rolling_queue_schedule"
+      ],
+      "summary": "Rotate the current round key left by 2 before generating the next round key.",
+      "evidence": [
+        "ePrint 2013/404 Section 4"
+      ]
+    },
+    {
+      "template_id": "ks_generate_next_round_key",
+      "name": "Key schedule generate next round key",
+      "op_type": "xor",
+      "repeat_domain_refs": [
+        "key_updates_u0_u7"
+      ],
+      "input_family_refs": [
+        "round_key_after_rotate",
+        "selected_schedule_word_after_index_xor"
+      ],
+      "output_family_refs": [
+        "round_key",
+        "schedule_l_words_pre_update"
+      ],
+      "operator_parameters": {
+        "word_size_bits": 16
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "rolling_queue",
+        "round_key_generation"
+      ],
+      "indexing_relation_refs": [
+        "speck_rolling_queue_schedule"
+      ],
+      "summary": "Commit the updated auxiliary schedule word back to the active queue slot and xor it with the rotated round key to produce the next round key.",
+      "evidence": [
+        "ePrint 2013/404 Section 4"
+      ]
+    }
+  ],
+  "indexing_relations": [
+    {
+      "relation_id": "speck_rolling_queue_schedule",
+      "style": "rolling_queue",
+      "domain_ref": "key_updates_u0_u7",
+      "family_refs": [
+        "schedule_l_words_pre_update",
+        "round_key"
+      ],
+      "active_selector": "selected auxiliary schedule word is slot i mod 3",
+      "selection_rule": "At key update i, the active auxiliary schedule word is the slot schedule_l_words_pre_update[i mod 3].",
+      "advancement_rule": "After key update i, the updated auxiliary word is written back to that same slot, the xor result becomes round_key for encryption round i+1, and the active slot advances to (i+1) mod 3.",
+      "summary": "Speck-32/64 uses one active round key together with a cyclic queue of three auxiliary schedule words.",
+      "evidence": [
+        "ePrint 2013/404 Section 4"
+      ]
+    }
+  ],
+  "dataflow_edges": [
+    {
+      "edge_id": "e1",
+      "from_kind": "state_family",
+      "from_ref": "left_word_pre_round",
+      "to_kind": "operator_template",
+      "to_ref": "enc_rotate_left_word_right",
+      "summary": "The left branch boundary value feeds the encryption right-rotation step."
+    },
+    {
+      "edge_id": "e2",
+      "from_kind": "operator_template",
+      "from_ref": "enc_rotate_left_word_right",
+      "to_kind": "state_family",
+      "to_ref": "left_word_after_rotate",
+      "summary": "The rotation step produces the rotated left branch."
+    },
+    {
+      "edge_id": "e3",
+      "from_kind": "state_family",
+      "from_ref": "left_word_after_rotate",
+      "to_kind": "operator_template",
+      "to_ref": "enc_add_branches",
+      "summary": "The rotated left branch is one input of the encryption modular-add template."
+    },
+    {
+      "edge_id": "e4",
+      "from_kind": "state_family",
+      "from_ref": "right_word_pre_round",
+      "to_kind": "operator_template",
+      "to_ref": "enc_add_branches",
+      "summary": "The current right branch is the second input of the encryption modular-add template."
+    },
+    {
+      "edge_id": "e5",
+      "from_kind": "operator_template",
+      "from_ref": "enc_add_branches",
+      "to_kind": "state_family",
+      "to_ref": "left_word_after_add",
+      "summary": "The modular-add template produces the intermediate left-branch sum."
+    },
+    {
+      "edge_id": "e6",
+      "from_kind": "state_family",
+      "from_ref": "left_word_after_add",
+      "to_kind": "operator_template",
+      "to_ref": "enc_xor_round_key",
+      "summary": "The modular-add sum is one input of the round-key xor template."
+    },
+    {
+      "edge_id": "e7",
+      "from_kind": "state_family",
+      "from_ref": "round_key",
+      "to_kind": "operator_template",
+      "to_ref": "enc_xor_round_key",
+      "summary": "The current round key is the second input of the round-key xor template."
+    },
+    {
+      "edge_id": "e8",
+      "from_kind": "operator_template",
+      "from_ref": "enc_xor_round_key",
+      "to_kind": "state_family",
+      "to_ref": "left_word_pre_round",
+      "summary": "The xor-with-round-key step yields the updated left branch carried to the next round boundary."
+    },
+    {
+      "edge_id": "e9",
+      "from_kind": "state_family",
+      "from_ref": "right_word_pre_round",
+      "to_kind": "operator_template",
+      "to_ref": "enc_rotate_right_word_left",
+      "summary": "The right branch boundary value feeds the encryption left-rotation step."
+    },
+    {
+      "edge_id": "e10",
+      "from_kind": "operator_template",
+      "from_ref": "enc_rotate_right_word_left",
+      "to_kind": "state_family",
+      "to_ref": "right_word_after_rotate",
+      "summary": "The rotation step produces the rotated right branch."
+    },
+    {
+      "edge_id": "e11",
+      "from_kind": "state_family",
+      "from_ref": "right_word_after_rotate",
+      "to_kind": "operator_template",
+      "to_ref": "enc_xor_branches",
+      "summary": "The rotated right branch is one input of the final xor template."
+    },
+    {
+      "edge_id": "e12",
+      "from_kind": "state_family",
+      "from_ref": "left_word_pre_round",
+      "to_kind": "operator_template",
+      "to_ref": "enc_xor_branches",
+      "summary": "The updated left branch from enc_xor_round_key is reused in the same logical round as the second input of the final xor template."
+    },
+    {
+      "edge_id": "e13",
+      "from_kind": "operator_template",
+      "from_ref": "enc_xor_branches",
+      "to_kind": "state_family",
+      "to_ref": "right_word_pre_round",
+      "summary": "The final xor step yields the updated right branch carried to the next round boundary."
+    },
+    {
+      "edge_id": "e14",
+      "from_kind": "state_family",
+      "from_ref": "schedule_l_words_pre_update",
+      "to_kind": "operator_template",
+      "to_ref": "ks_rotate_schedule_word",
+      "summary": "The rolling auxiliary schedule-word array feeds the template that selects and rotates slot i mod 3."
+    },
+    {
+      "edge_id": "e15",
+      "from_kind": "operator_template",
+      "from_ref": "ks_rotate_schedule_word",
+      "to_kind": "state_family",
+      "to_ref": "selected_schedule_word_after_rotate",
+      "summary": "The selected auxiliary schedule word is produced after the right rotation by 7."
+    },
+    {
+      "edge_id": "e16",
+      "from_kind": "state_family",
+      "from_ref": "selected_schedule_word_after_rotate",
+      "to_kind": "operator_template",
+      "to_ref": "ks_add_with_round_key",
+      "summary": "The rotated auxiliary schedule word is one input of the key-schedule modular addition."
+    },
+    {
+      "edge_id": "e17",
+      "from_kind": "state_family",
+      "from_ref": "round_key",
+      "to_kind": "operator_template",
+      "to_ref": "ks_add_with_round_key",
+      "summary": "The current round key is the second input of the key-schedule modular addition."
+    },
+    {
+      "edge_id": "e18",
+      "from_kind": "operator_template",
+      "from_ref": "ks_add_with_round_key",
+      "to_kind": "state_family",
+      "to_ref": "selected_schedule_word_after_add",
+      "summary": "The key-schedule modular addition produces the updated auxiliary schedule word before constant injection."
+    },
+    {
+      "edge_id": "e19",
+      "from_kind": "state_family",
+      "from_ref": "selected_schedule_word_after_add",
+      "to_kind": "operator_template",
+      "to_ref": "ks_xor_round_index",
+      "summary": "The updated auxiliary schedule word feeds the round-index xor template."
+    },
+    {
+      "edge_id": "e20",
+      "from_kind": "state_family",
+      "from_ref": "round_index_constant",
+      "to_kind": "operator_template",
+      "to_ref": "ks_xor_round_index",
+      "summary": "The key-schedule round index constant is injected by xor."
+    },
+    {
+      "edge_id": "e21",
+      "from_kind": "operator_template",
+      "from_ref": "ks_xor_round_index",
+      "to_kind": "state_family",
+      "to_ref": "selected_schedule_word_after_index_xor",
+      "summary": "The round-index xor produces the auxiliary schedule word after constant injection."
+    },
+    {
+      "edge_id": "e22",
+      "from_kind": "state_family",
+      "from_ref": "round_key",
+      "to_kind": "operator_template",
+      "to_ref": "ks_rotate_round_key",
+      "summary": "The current round key feeds the key-schedule left-rotation template."
+    },
+    {
+      "edge_id": "e23",
+      "from_kind": "operator_template",
+      "from_ref": "ks_rotate_round_key",
+      "to_kind": "state_family",
+      "to_ref": "round_key_after_rotate",
+      "summary": "The key-schedule left rotation produces the rotated current round key."
+    },
+    {
+      "edge_id": "e24",
+      "from_kind": "state_family",
+      "from_ref": "round_key_after_rotate",
+      "to_kind": "operator_template",
+      "to_ref": "ks_generate_next_round_key",
+      "summary": "The rotated round key is one input of the final key-generation xor template."
+    },
+    {
+      "edge_id": "e25",
+      "from_kind": "state_family",
+      "from_ref": "selected_schedule_word_after_index_xor",
+      "to_kind": "operator_template",
+      "to_ref": "ks_generate_next_round_key",
+      "summary": "The updated auxiliary schedule word after constant injection is the second input of the final key-generation xor template."
+    },
+    {
+      "edge_id": "e26",
+      "from_kind": "operator_template",
+      "from_ref": "ks_generate_next_round_key",
+      "to_kind": "state_family",
+      "to_ref": "round_key",
+      "summary": "The final key-generation xor yields the next round key, which is consumed by encryption round i+1."
+    },
+    {
+      "edge_id": "e27",
+      "from_kind": "operator_template",
+      "from_ref": "ks_generate_next_round_key",
+      "to_kind": "state_family",
+      "to_ref": "schedule_l_words_pre_update",
+      "summary": "The final key-generation step also commits the updated auxiliary schedule word back into the active queue slot."
+    }
+  ],
+  "observation_points": [
+    {
+      "point_id": "obs_enc_add_branches",
+      "ref_kind": "operator_template",
+      "ref": "enc_add_branches",
+      "role": "objective_surface",
+      "summary": "The encryption modular-add templates across rounds 0 through 8 form the primary objective surface for the reported trail-weight checkpoint."
+    },
+    {
+      "point_id": "obs_r9_checkpoint",
+      "ref_kind": "state_family",
+      "ref": "left_word_pre_round",
+      "role": "validation_checkpoint",
+      "summary": "The 9-round task is interpreted at the boundary after round 8 together with the companion right-branch family and compared against the paper's reported Table 2 checkpoint."
+    }
+  ],
+  "provenance_and_gaps": {
+    "derived_from": [
+      "docs/cryptanalysis-benchmark/examples/eprint-2016-407.speck32-64.algorithm-description.v0.json"
+    ],
+    "semantic_layers_not_yet_attached": [
+      "No concrete xor-differential modular-add rule pack is attached to the encryption or key-schedule add_mod templates yet.",
+      "No backend-specific variable families or inequalities are attached yet.",
+      "The rolling-queue indexing relation is declared, but it is not yet expanded into fully instantiated per-round slot objects."
+    ],
+    "blocking_gaps": [
+      "Dataflow edges remain summary-heavy for same-round boundary reuse between the updated left and right branches.",
+      "The current IR does not yet encode an executable unrolling procedure from rolling-queue relations to per-round key-schedule slot instances."
+    ],
+    "ready_for_semantic_refinement": true,
+    "notes": "This IR is intentionally structural and task-scoped. It is explicit enough for later semantic refinement, but still earlier than backend emission."
+  }
+}

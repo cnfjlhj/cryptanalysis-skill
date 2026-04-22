@@ -1,0 +1,80 @@
+{
+  "attachment_id": "speck32-64-r9-diff.structural-ir.v0.semantic-attachment.v0",
+  "status": "reviewable",
+  "source_structural_ir_id": "speck32-64-r9-diff.structural-ir.v0",
+  "analysis_context": {
+    "primitive_id": "speck32_64",
+    "attack_family": "differential",
+    "semantic_domain": "xor_differential",
+    "granularity": "word",
+    "target_round_start": 0,
+    "target_round_end": 8,
+    "notes": "This attachment manifest records only semantic resolution status, not backend block synthesis."
+  },
+  "loaded_rule_packs": [
+    {
+      "rule_pack_id": "present-sbox-xor-diff-cdp-v1",
+      "source_path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/local-semantics.present-sbox.cdp.json",
+      "target_primitive_id": "present80",
+      "operator_type": "sbox",
+      "component_name": "present_sbox",
+      "semantic_domain": "xor_differential",
+      "granularity": "bit",
+      "exactness": "valid_cutting_off",
+      "rule_families": [
+        "present_sbox_differential_or_activity"
+      ]
+    }
+  ],
+  "template_attachments": [
+    {
+      "attachment_entry_id": "enc_add_branches:enc_add_mod_weight",
+      "template_ref": "enc_add_branches",
+      "requirement_slot_id": "enc_add_mod_weight",
+      "op_type": "add_mod",
+      "rule_family": "arx_add_mod_xor_differential",
+      "component_name_hint": "",
+      "input_width_bits": 16,
+      "output_width_bits": 16,
+      "resolution_status": "missing",
+      "matched_rule_pack_refs": [],
+      "matching_axes": [],
+      "summary": "No loaded rule pack satisfies enc_add_branches",
+      "notes": "Later semantic refinement must attach xor-differential modular-add semantics to the encryption add_mod template."
+    },
+    {
+      "attachment_entry_id": "ks_add_with_round_key:ks_add_mod_weight",
+      "template_ref": "ks_add_with_round_key",
+      "requirement_slot_id": "ks_add_mod_weight",
+      "op_type": "add_mod",
+      "rule_family": "arx_add_mod_xor_differential",
+      "component_name_hint": "",
+      "input_width_bits": 16,
+      "output_width_bits": 16,
+      "resolution_status": "missing",
+      "matched_rule_pack_refs": [],
+      "matching_axes": [],
+      "summary": "No loaded rule pack satisfies ks_add_with_round_key",
+      "notes": "Later semantic refinement must attach xor-differential modular-add semantics to the key-schedule add_mod template."
+    }
+  ],
+  "resolution_summary": {
+    "total_requirements": 2,
+    "resolved_count": 0,
+    "missing_count": 2,
+    "ambiguous_count": 0,
+    "ready_for_model_instantiation": false
+  },
+  "provenance_and_gaps": {
+    "derived_from": [
+      "docs/cryptanalysis-benchmark/trials/eprint-2016-407/structural-ir.speck32-64.r9.v0.json",
+      "docs/cryptanalysis-benchmark/trials/eprint-2013-676/local-semantics.present-sbox.cdp.json"
+    ],
+    "unresolved_attachment_ids": [
+      "enc_add_branches:enc_add_mod_weight",
+      "ks_add_with_round_key:ks_add_mod_weight"
+    ],
+    "ready_for_model_instantiation": false,
+    "notes": "At least one declared refinement requirement is still missing or ambiguous."
+  }
+}

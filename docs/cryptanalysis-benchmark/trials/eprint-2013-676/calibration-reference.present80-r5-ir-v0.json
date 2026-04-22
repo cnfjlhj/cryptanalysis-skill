@@ -1,0 +1,37 @@
+{
+  "reference_set_id": "eprint-2013-676-present80-r5-ir-generated-v0",
+  "paper_id": "eprint-2013-676",
+  "paper_title": "Automatic Security Evaluation and (Related-key) Differential Characteristic Search: Application to SIMON, PRESENT, LBlock, DES(L) and Other Bit-oriented Block Ciphers",
+  "primitive_family": "spn",
+  "attack_family": "related_key_differential",
+  "bundle_complete": "preferred",
+  "primitive_spec_ok": true,
+  "attack_spec_ok": true,
+  "backend_target": "milp",
+  "default_mismatch_stage": "validation_gap",
+  "default_next_action": "If the generated r5 lane drifts from the paper checkpoint, repair the IR-to-instantiation mapping before extending the workflow.",
+  "emission_defaults": {
+    "instantiation_path": "model-instantiation.present80.r5.v0.json",
+    "primitive_spec_path": "primitive-spec.present80.full.json",
+    "local_semantics_path": "local-semantics.present-sbox.cdp.json",
+    "unit_id": "p1_compute_5r_lower_bound_model",
+    "default_sbox_model": "cdp",
+    "output_root": "../../../../outputs/cryptanalysis-benchmark/eprint-2013-676/generated-r5-ir-v0"
+  },
+  "cases": [
+    {
+      "case_id": "present80-table4-r5-ir-generated-v0",
+      "description": "IR-generated 5-round PRESENT-80 checkpoint lane compared against Appendix A.1 Table 4 using the exact S-box model.",
+      "claim_kind": "exact_minimum",
+      "objective_direction": "minimize",
+      "expected_value": 3,
+      "expected_claim": "Table 4 reports that the minimum number of active S-boxes for 5-round PRESENT-80 is 3.",
+      "paper_location": "Appendix A.1, Table 4",
+      "round_end": 5,
+      "expected_sbox_model": "exact",
+      "expected_unit_id": "p1_compute_5r_lower_bound_model",
+      "tolerance": 1e-9,
+      "next_action_on_unresolved": "Repair the IR-to-instantiation mapping or raise solve confidence before treating the generated lane as a trusted demo."
+    }
+  ]
+}

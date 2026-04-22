@@ -1,0 +1,330 @@
+{
+  "algorithm_description_id": "eprint-2013-676.present80.r5.algorithm-description.v0",
+  "status": "reviewable",
+  "source_materials": [
+    {
+      "id": "attack-paper",
+      "kind": "attack_paper",
+      "label": "ePrint 2013/676",
+      "role": "attack-claim-source",
+      "path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/eprint-2013-676.pdf",
+      "url": "https://eprint.iacr.org/2013/676",
+      "location": "Appendix A.1, Table 4",
+      "notes": "Provides the paper-facing validation anchor for the 5-round checkpoint."
+    },
+    {
+      "id": "primitive-paper",
+      "kind": "primitive_paper",
+      "label": "PRESENT CHES 2007",
+      "role": "primitive-definition-source",
+      "path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/present-ches2007.pdf",
+      "url": "https://www.iacr.org/archive/ches2007/47270450/47270450.pdf",
+      "location": "Section 3",
+      "notes": "Defines PRESENT round structure and key schedule."
+    },
+    {
+      "id": "primitive-spec",
+      "kind": "note",
+      "label": "primitive-spec.present80.full.json",
+      "role": "machine-readable-primitive-reference",
+      "path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/primitive-spec.present80.full.json",
+      "notes": "Current repository-side structured primitive surface."
+    }
+  ],
+  "primitive_overview": {
+    "primitive_id": "present80",
+    "primitive_name": "PRESENT-80",
+    "variant": "80-bit-key block-cipher variant",
+    "family": "spn",
+    "block_size_bits": 64,
+    "key_size_bits": 80,
+    "state_size_bits": 64,
+    "round_count": 31,
+    "round_index_origin": 1,
+    "state_layout_summary": "The encryption state is a 64-bit state updated round by round. The current lane treats the state in bit-oriented form and also groups bits into 16 parallel 4-bit S-box cells where needed.",
+    "round_structure_summary": "Each full round applies addRoundKey, then the 16-way 4-bit S-box layer, then the bit permutation layer pLayer.",
+    "key_schedule_summary": "The 80-bit master-key register is rotated left by 61 positions each round, the top 4 bits pass through the PRESENT S-box, and the round counter is xor-ed into designated key-register bits before the next round key is extracted.",
+    "notes": "This overview is paper-facing and reviewable. It is not yet the final IR graph."
+  },
+  "analysis_task": {
+    "attack_family": "related_key_differential",
+    "security_goal": "paper-checkpoint validation for a distinguisher-support metric used in later attack construction",
+    "semantic_domain": "xor_differential",
+    "granularity": "bit",
+    "exactness_goal": "exact",
+    "target_round_start": 1,
+    "target_round_end": 5,
+    "objective_metric": "minimum number of active S-boxes",
+    "objective_direction": "minimize",
+    "scenario_flags": {
+      "related_key": true,
+      "distinguisher_only": false,
+      "key_recovery_stage_present": true
+    },
+    "task_summary": "Check whether the 5-round PRESENT-80 related-key differential lane reaches the same minimum active S-box count reported in the paper."
+  },
+  "validation_anchor": {
+    "paper_id": "eprint-2013-676",
+    "paper_title": "Automatic Security Evaluation and (Related-key) Differential Characteristic Search: Application to SIMON, PRESENT, LBlock, DES(L) and Other Bit-oriented Block Ciphers",
+    "location": "Appendix A.1, Table 4",
+    "claim": "Table 4 reports that the minimum number of active S-boxes for 5-round PRESENT-80 is 3.",
+    "claim_type": "characteristic",
+    "expected_value_type": "exact",
+    "expected_value": 3,
+    "comparison_metric": "exact minimum active S-box count at round end 5",
+    "notes": "This is the checkpoint later used by the verdict layer."
+  },
+  "structured_description": {
+    "state_containers": [
+      {
+        "name": "state",
+        "kind": "bitvector",
+        "width_bits": 64,
+        "count": 1,
+        "role": "main encryption state"
+      },
+      {
+        "name": "round_key",
+        "kind": "bitvector",
+        "width_bits": 64,
+        "count": 1,
+        "role": "subkey applied at addRoundKey"
+      },
+      {
+        "name": "master_key_register",
+        "kind": "register",
+        "width_bits": 80,
+        "count": 1,
+        "role": "80-bit key schedule register"
+      },
+      {
+        "name": "round_counter",
+        "kind": "bitvector",
+        "width_bits": 5,
+        "count": 1,
+        "role": "per-round counter injected into the key schedule"
+      }
+    ],
+    "schedule_indexing_model": {
+      "style": "fixed_register",
+      "active_element": "master_key_register",
+      "movement_rule": "The same 80-bit key register persists across rounds. Each round exposes bits 79..16 as the round key, then mutates the same register in place by rotate, top-nibble S-box application, and round-counter injection.",
+      "summary": "PRESENT-80 uses a single fixed key register rather than a rolling queue of key words.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    },
+    "round_steps": [
+      {
+        "step_id": "ark",
+        "step_order": 1,
+        "name": "addRoundKey",
+        "op_type": "key_add",
+        "summary": "Xor the 64-bit state with the current 64-bit round key.",
+        "operation_parameters": {
+          "word_size_bits": 64,
+          "combiner": "xor"
+        },
+        "inputs": [
+          "state",
+          "round_key"
+        ],
+        "outputs": [
+          "state_after_ark"
+        ],
+        "evidence": [
+          "PRESENT CHES 2007 Section 3"
+        ]
+      },
+      {
+        "step_id": "sbox_layer",
+        "step_order": 2,
+        "name": "S-box layer",
+        "op_type": "sbox",
+        "summary": "Apply the 4-bit PRESENT S-box in parallel to 16 state nibbles.",
+        "operation_parameters": {
+          "sbox_name": "present_sbox",
+          "cell_size_bits": 4,
+          "parallel_count": 16
+        },
+        "semantic_refinement_requirements": [
+          {
+            "kind": "local_rule_pack",
+            "domain": "xor_differential",
+            "rule_family": "present_sbox_differential_or_activity",
+            "required_for": "state-transition feasibility and active-S-box counting",
+            "summary": "Later stages need the PRESENT 4-bit S-box differential/activity semantics instead of treating this step as an opaque nonlinear box."
+          }
+        ],
+        "inputs": [
+          "state_after_ark"
+        ],
+        "outputs": [
+          "state_after_sbox"
+        ],
+        "evidence": [
+          "PRESENT CHES 2007 Section 3"
+        ]
+      },
+      {
+        "step_id": "player",
+        "step_order": 3,
+        "name": "pLayer",
+        "op_type": "permute_bits",
+        "summary": "Permute the 64 state bits according to the fixed PRESENT bit-permutation table.",
+        "operation_parameters": {
+          "permutation_name": "present_player",
+          "state_size_bits": 64
+        },
+        "inputs": [
+          "state_after_sbox"
+        ],
+        "outputs": [
+          "state"
+        ],
+        "evidence": [
+          "PRESENT CHES 2007 Section 3"
+        ]
+      }
+    ],
+    "key_schedule_steps": [
+      {
+        "step_id": "ks_extract_round_key",
+        "step_order": 1,
+        "name": "Extract round key",
+        "op_type": "extract_bits",
+        "summary": "Take the left-most 64 bits of the 80-bit key register as the round key.",
+        "operation_parameters": {
+          "source_slice": "master_key_register[79:16]",
+          "width_bits": 64
+        },
+        "indexing_effect": {
+          "style": "fixed_slice_extract",
+          "selected_element": "master_key_register[79:16]",
+          "writeback_target": "round_key",
+          "movement": "none",
+          "produces_round_key": true,
+          "summary": "Expose a fixed top slice of the same 80-bit register as the current round key without changing schedule indexing."
+        },
+        "evidence": [
+          "PRESENT CHES 2007 Section 3"
+        ]
+      },
+      {
+        "step_id": "ks_rotate_left_61",
+        "step_order": 2,
+        "name": "Rotate key register",
+        "op_type": "rotate_left",
+        "summary": "Rotate the 80-bit key register left by 61 positions.",
+        "operation_parameters": {
+          "rotation_amount": 61,
+          "register_size_bits": 80
+        },
+        "indexing_effect": {
+          "style": "in_place_register_update",
+          "selected_element": "master_key_register",
+          "writeback_target": "master_key_register",
+          "movement": "none",
+          "produces_round_key": false,
+          "summary": "Mutate the same 80-bit register in place; there is no queue head or slot advance."
+        },
+        "evidence": [
+          "PRESENT CHES 2007 Section 3"
+        ]
+      },
+      {
+        "step_id": "ks_sbox_top_nibble",
+        "step_order": 3,
+        "name": "S-box on top nibble",
+        "op_type": "sbox",
+        "summary": "Apply the PRESENT S-box to the top 4 bits of the key register.",
+        "operation_parameters": {
+          "sbox_name": "present_sbox",
+          "target_slice": "master_key_register[79:76]",
+          "cell_size_bits": 4
+        },
+        "semantic_refinement_requirements": [
+          {
+            "kind": "local_rule_pack",
+            "domain": "xor_differential",
+            "rule_family": "present_sbox_differential_or_activity",
+            "required_for": "related-key propagation through the key-schedule nonlinear step",
+            "summary": "The key-schedule S-box needs the same PRESENT differential/activity rule pack instead of being left as free text."
+          }
+        ],
+        "indexing_effect": {
+          "style": "fixed_slice_update",
+          "selected_element": "master_key_register[79:76]",
+          "writeback_target": "master_key_register[79:76]",
+          "movement": "none",
+          "produces_round_key": false,
+          "summary": "Only the top nibble of the same fixed register is rewritten; schedule indexing still does not move."
+        },
+        "evidence": [
+          "PRESENT CHES 2007 Section 3"
+        ]
+      },
+      {
+        "step_id": "ks_add_round_counter",
+        "step_order": 4,
+        "name": "Inject round counter",
+        "op_type": "xor",
+        "summary": "Xor the round counter into the designated key-register bit positions.",
+        "operation_parameters": {
+          "counter_size_bits": 5,
+          "target_bits": [
+            "master_key_register[19]",
+            "master_key_register[18]",
+            "master_key_register[17]",
+            "master_key_register[16]",
+            "master_key_register[15]"
+          ]
+        },
+        "indexing_effect": {
+          "style": "fixed_slice_update",
+          "selected_element": "master_key_register[19:15]",
+          "writeback_target": "master_key_register[19:15]",
+          "movement": "none",
+          "produces_round_key": false,
+          "summary": "Inject the counter into fixed bit positions of the same register; no queue advance or slot selection is involved."
+        },
+        "evidence": [
+          "PRESENT CHES 2007 Section 3"
+        ]
+      }
+    ],
+    "operator_inventory": [
+      "key_add",
+      "sbox",
+      "permute_bits",
+      "extract_bits",
+      "rotate_left",
+      "xor"
+    ]
+  },
+  "provenance_and_gaps": {
+    "explicit_facts": [
+      "PRESENT-80 is an SPN block cipher with 64-bit block size and 80-bit key size.",
+      "The cipher uses 31 rounds in the standard encryption algorithm.",
+      "Each round applies addRoundKey, S-box layer, and pLayer.",
+      "The attack paper reports that the minimum number of active S-boxes for 5-round PRESENT-80 is 3.",
+      "The current lane targets a related-key differential xor-difference setting."
+    ],
+    "inferred_facts": [
+      "For the current automated lane, the relevant security goal is best represented as validation of a paper-facing checkpoint rather than full end-to-end attack reconstruction.",
+      "The analysis target is treated as bit-granular because the current benchmark lane is bit-oriented and the reference case is modeled that way."
+    ],
+    "unresolved_questions": [
+      "How much of the later key-recovery stage from the paper should be represented already at the algorithm-description layer?",
+      "Should future algorithm descriptions include explicit distinction between primitive description and attack-program description when a paper mixes both?",
+      "How should we encode paper-specific modeling assumptions that are not part of the primitive itself?"
+    ],
+    "blocking_gaps": [
+      "The current schema now exposes the needed constants and hooks, but the operator-parameter vocabulary is still permissive rather than canonical across primitive families.",
+      "Semantic refinement requirements can now be declared, but they are not yet auto-resolved to concrete local rule packs during compilation.",
+      "The current top-level report layer is still closer to a workflow report than a full cryptanalysis narrative."
+    ],
+    "ready_for_ir": false,
+    "notes": "This example is intentionally richer than the intake card but still earlier than the primitive spec plus backend instantiation split."
+  }
+}

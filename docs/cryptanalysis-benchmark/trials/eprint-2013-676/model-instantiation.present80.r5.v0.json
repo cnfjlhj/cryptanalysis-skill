@@ -1,0 +1,650 @@
+{
+  "instantiation_id": "present80-r5-rkdiff-lower-bound-instantiation-v0",
+  "target_primitive_id": "present80",
+  "target_attack_id": "present80-r5-rkdiff-characteristic-lower-bound",
+  "target_global_plan_id": "present80-r5-rkdiff-lower-bound-v0",
+  "backend": "milp",
+  "source_refs": [
+    {
+      "kind": "primitive_paper",
+      "label": "PRESENT CHES 2007",
+      "location": "Section 3, round structure and key schedule",
+      "url": "https://www.iacr.org/archive/ches2007/47270450/47270450.pdf"
+    },
+    {
+      "kind": "attack_paper",
+      "label": "ePrint 2013/676",
+      "location": "Appendix A.1",
+      "url": "https://eprint.iacr.org/2013/676"
+    },
+    {
+      "kind": "note",
+      "label": "Structural IR input",
+      "location": "present80-r5-rkdiff.structural-ir.v0"
+    },
+    {
+      "kind": "note",
+      "label": "Semantic attachment input",
+      "location": "present80-r5-rkdiff.structural-ir.v0.semantic-attachment.v0"
+    }
+  ],
+  "assumptions": [
+    "This execution-facing artifact is task-scoped to rounds 1 through 5 rather than to the full 31-round primitive.",
+    "Only the round keys K1 through K5 are needed, so the model instantiates key-schedule updates 1 through 4.",
+    "The PRESENT S-box is bijective with branch number 2, so the bijective nonzero coupling is kept and the redundant branch-number inequality is omitted.",
+    "XORing the round counter constant into key-register bits k19..k15 does not change XOR-difference bits, so the difference model may copy the post-S-box key-register state into the next-round key register."
+  ],
+  "variable_families": [
+    {
+      "family_id": "state_pre_round",
+      "variable_kind": "difference_bit",
+      "binary": true,
+      "naming_pattern": "s_r{round}_b{bit}",
+      "index_dimensions": [
+        {
+          "name": "round",
+          "start": 1,
+          "end": 6
+        },
+        {
+          "name": "bit",
+          "start": 0,
+          "end": 63
+        }
+      ],
+      "semantic_role": "Bit-level XOR-difference variables for the encryption state at the input boundary of each modeled round."
+    },
+    {
+      "family_id": "state_after_ark",
+      "variable_kind": "difference_bit",
+      "binary": true,
+      "naming_pattern": "sa_r{round}_b{bit}",
+      "index_dimensions": [
+        {
+          "name": "round",
+          "start": 1,
+          "end": 5
+        },
+        {
+          "name": "bit",
+          "start": 0,
+          "end": 63
+        }
+      ],
+      "semantic_role": "Bit-level state difference immediately after addRoundKey in each modeled round."
+    },
+    {
+      "family_id": "state_after_sbox",
+      "variable_kind": "difference_bit",
+      "binary": true,
+      "naming_pattern": "ss_r{round}_b{bit}",
+      "index_dimensions": [
+        {
+          "name": "round",
+          "start": 1,
+          "end": 5
+        },
+        {
+          "name": "bit",
+          "start": 0,
+          "end": 63
+        }
+      ],
+      "semantic_role": "Bit-level state difference immediately after the 16 parallel encryption S-boxes in each modeled round."
+    },
+    {
+      "family_id": "round_key_bits",
+      "variable_kind": "difference_bit",
+      "binary": true,
+      "naming_pattern": "rk_r{round}_b{bit}",
+      "index_dimensions": [
+        {
+          "name": "round",
+          "start": 1,
+          "end": 5
+        },
+        {
+          "name": "bit",
+          "start": 0,
+          "end": 63
+        }
+      ],
+      "semantic_role": "Bit-level XOR differences of round keys K1 through the task-scoped final round."
+    },
+    {
+      "family_id": "key_reg_pre_round",
+      "variable_kind": "difference_bit",
+      "binary": true,
+      "naming_pattern": "k_r{round}_b{bit}",
+      "index_dimensions": [
+        {
+          "name": "round",
+          "start": 1,
+          "end": 5
+        },
+        {
+          "name": "bit",
+          "start": 0,
+          "end": 79
+        }
+      ],
+      "semantic_role": "Bit-level XOR differences of the 80-bit key register before round-key extraction in each modeled round."
+    },
+    {
+      "family_id": "key_reg_after_rotate",
+      "variable_kind": "difference_bit",
+      "binary": true,
+      "naming_pattern": "kr_u{update}_b{bit}",
+      "index_dimensions": [
+        {
+          "name": "update",
+          "start": 1,
+          "end": 4
+        },
+        {
+          "name": "bit",
+          "start": 0,
+          "end": 79
+        }
+      ],
+      "semantic_role": "Bit-level XOR differences after the key register is rotated left by 61 in each modeled update."
+    },
+    {
+      "family_id": "key_reg_after_sbox",
+      "variable_kind": "difference_bit",
+      "binary": true,
+      "naming_pattern": "ks_u{update}_b{bit}",
+      "index_dimensions": [
+        {
+          "name": "update",
+          "start": 1,
+          "end": 4
+        },
+        {
+          "name": "bit",
+          "start": 0,
+          "end": 79
+        }
+      ],
+      "semantic_role": "Bit-level XOR differences after the top nibble of the rotated key register passes through the PRESENT S-box."
+    },
+    {
+      "family_id": "ks_sbox_active",
+      "variable_kind": "activity_marker",
+      "binary": true,
+      "naming_pattern": "ak_u{update}",
+      "index_dimensions": [
+        {
+          "name": "update",
+          "start": 1,
+          "end": 4
+        }
+      ],
+      "semantic_role": "Activity markers for the single key-schedule S-box in each modeled update."
+    },
+    {
+      "family_id": "ark_xor_dummy",
+      "variable_kind": "xor_dummy",
+      "binary": true,
+      "naming_pattern": "dx_r{round}_b{bit}",
+      "index_dimensions": [
+        {
+          "name": "round",
+          "start": 1,
+          "end": 5
+        },
+        {
+          "name": "bit",
+          "start": 0,
+          "end": 63
+        }
+      ],
+      "semantic_role": "Bit-level dummy variables used by the XOR exactness constraints for addRoundKey."
+    },
+    {
+      "family_id": "enc_sbox_active",
+      "variable_kind": "activity_marker",
+      "binary": true,
+      "naming_pattern": "ae_r{round}_s{sbox}",
+      "index_dimensions": [
+        {
+          "name": "round",
+          "start": 1,
+          "end": 5
+        },
+        {
+          "name": "sbox",
+          "start": 0,
+          "end": 15
+        }
+      ],
+      "semantic_role": "Activity markers for the 16 encryption S-box instances in each modeled round."
+    }
+  ],
+  "constraint_blocks": [
+    {
+      "block_id": "extract_round_keys",
+      "family": "key_extract_equality",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "source_register": "key_reg_pre_round",
+        "target_round_key": "round_key_bits"
+      },
+      "instance_scope": {
+        "round_start": 1,
+        "round_end": 5,
+        "bit_start": 0,
+        "bit_end": 63
+      },
+      "index_mapping": {
+        "source_round": "round",
+        "source_bit": "bit + 16",
+        "target_round": "round",
+        "target_bit": "bit"
+      },
+      "semantic_summary": "Extract the left-most 64 bits of the PRESENT-80 key register as the round key for each modeled round."
+    },
+    {
+      "block_id": "encryption_addroundkey_xor",
+      "family": "xor_bit_exact",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "lhs_input": "state_pre_round",
+        "rhs_input": "round_key_bits",
+        "output": "state_after_ark",
+        "dummy": "ark_xor_dummy"
+      },
+      "instance_scope": {
+        "round_start": 1,
+        "round_end": 5,
+        "bit_start": 0,
+        "bit_end": 63
+      },
+      "paper_equation_refs": [
+        "Eq. (1)",
+        "Sect. 2.2 bit-level upper bound a + b + c <= 2"
+      ],
+      "semantic_summary": "Apply exact bit-level XOR propagation constraints to each addRoundKey bit."
+    },
+    {
+      "block_id": "encryption_sbox_activity",
+      "family": "sbox_activity_input_nonzero",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "input_bits": "state_after_ark",
+        "activity": "enc_sbox_active"
+      },
+      "instance_scope": {
+        "round_start": 1,
+        "round_end": 5,
+        "sbox_start": 0,
+        "sbox_end": 15
+      },
+      "index_mapping": {
+        "round": "round",
+        "input_bit": "4 * sbox + lane",
+        "activity_index": "round,sbox"
+      },
+      "paper_equation_refs": [
+        "Eq. (3)"
+      ],
+      "semantic_summary": "Mark an encryption S-box active iff its 4-bit input difference is nonzero."
+    },
+    {
+      "block_id": "encryption_sbox_bijective_link",
+      "family": "sbox_bijective_nonzero",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "input_bits": "state_after_ark",
+        "output_bits": "state_after_sbox"
+      },
+      "instance_scope": {
+        "round_start": 1,
+        "round_end": 5,
+        "sbox_start": 0,
+        "sbox_end": 15
+      },
+      "index_mapping": {
+        "round": "round",
+        "input_bit": "4 * sbox + lane",
+        "output_bit": "4 * sbox + lane"
+      },
+      "paper_equation_refs": [
+        "Eq. (4)"
+      ],
+      "semantic_summary": "Impose bijective nonzero-input/nonzero-output coupling for each 4x4 encryption S-box.",
+      "notes": "Eq. (5) is intentionally omitted because the PRESENT S-box is bijective with branch number 2."
+    },
+    {
+      "block_id": "encryption_sbox_cdp",
+      "family": "sbox_valid_cutting_off",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "input_bits": "state_after_ark",
+        "output_bits": "state_after_sbox",
+        "activity": "enc_sbox_active"
+      },
+      "instance_scope": {
+        "round_start": 1,
+        "round_end": 5,
+        "sbox_start": 0,
+        "sbox_end": 15
+      },
+      "index_mapping": {
+        "round": "round",
+        "input_bit": "4 * sbox + lane",
+        "output_bit": "4 * sbox + lane"
+      },
+      "local_rule_pack_refs": [
+        "present-sbox-xor-diff-cdp-v1"
+      ],
+      "paper_equation_refs": [
+        "Fact 1",
+        "Fact 2",
+        "Eqs. (7) to (10)"
+      ],
+      "semantic_summary": "Instantiate the attached PRESENT S-box local rule pack for each encryption S-box instance."
+    },
+    {
+      "block_id": "player_to_next_round",
+      "family": "permutation_equality",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "source_bits": "state_after_sbox",
+        "target_bits": "state_pre_round"
+      },
+      "instance_scope": {
+        "round_start": 1,
+        "round_end": 5,
+        "bit_start": 0,
+        "bit_end": 63
+      },
+      "index_mapping": {
+        "source_round": "round",
+        "source_bit": "bit",
+        "target_round": "round + 1",
+        "target_bit": "pLayer(bit) from primitive-spec.present80.full.json"
+      },
+      "semantic_summary": "Wire each round through the PRESENT pLayer into the next round boundary."
+    },
+    {
+      "block_id": "key_schedule_rotate_left_61",
+      "family": "rotation_equality",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "source_register": "key_reg_pre_round",
+        "target_register": "key_reg_after_rotate"
+      },
+      "instance_scope": {
+        "update_start": 1,
+        "update_end": 4,
+        "bit_start": 0,
+        "bit_end": 79
+      },
+      "index_mapping": {
+        "source_round": "update",
+        "target_update": "update",
+        "target_bit": "(bit + 61) mod 80"
+      },
+      "semantic_summary": "Apply the 80-bit left rotation by 61 in the key-schedule updates needed for later round keys."
+    },
+    {
+      "block_id": "key_schedule_sbox_activity",
+      "family": "sbox_activity_input_nonzero",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "input_bits": "key_reg_after_rotate",
+        "activity": "ks_sbox_active"
+      },
+      "instance_scope": {
+        "update_start": 1,
+        "update_end": 4
+      },
+      "index_mapping": {
+        "update": "update",
+        "input_bit": "76 + lane",
+        "activity_index": "update"
+      },
+      "paper_equation_refs": [
+        "Eq. (3)"
+      ],
+      "semantic_summary": "Mark the top-nibble key-schedule S-box active iff the rotated key-register nibble is nonzero."
+    },
+    {
+      "block_id": "key_schedule_sbox_bijective_link",
+      "family": "sbox_bijective_nonzero",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "input_bits": "key_reg_after_rotate",
+        "output_bits": "key_reg_after_sbox"
+      },
+      "instance_scope": {
+        "update_start": 1,
+        "update_end": 4
+      },
+      "index_mapping": {
+        "update": "update",
+        "input_bit": "76 + lane",
+        "output_bit": "76 + lane"
+      },
+      "paper_equation_refs": [
+        "Eq. (4)"
+      ],
+      "semantic_summary": "Apply bijective nonzero coupling to the top nibble of the key schedule."
+    },
+    {
+      "block_id": "key_schedule_sbox_cdp",
+      "family": "sbox_valid_cutting_off",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "input_bits": "key_reg_after_rotate",
+        "output_bits": "key_reg_after_sbox",
+        "activity": "ks_sbox_active"
+      },
+      "instance_scope": {
+        "update_start": 1,
+        "update_end": 4
+      },
+      "index_mapping": {
+        "update": "update",
+        "input_bit": "76 + lane",
+        "output_bit": "76 + lane"
+      },
+      "local_rule_pack_refs": [
+        "present-sbox-xor-diff-cdp-v1"
+      ],
+      "paper_equation_refs": [
+        "Fact 1",
+        "Fact 2",
+        "Eqs. (7) to (10)"
+      ],
+      "semantic_summary": "Reuse the attached PRESENT S-box local rule pack for the key-schedule nonlinear update."
+    },
+    {
+      "block_id": "key_schedule_copy_unchanged_lower_bits",
+      "family": "register_copy_equality",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "source_register": "key_reg_after_rotate",
+        "target_register": "key_reg_after_sbox"
+      },
+      "instance_scope": {
+        "update_start": 1,
+        "update_end": 4,
+        "bit_start": 0,
+        "bit_end": 75
+      },
+      "index_mapping": {
+        "source_update": "update",
+        "source_bit": "bit",
+        "target_update": "update",
+        "target_bit": "bit"
+      },
+      "semantic_summary": "Copy the 76 key-register bits outside the top nibble unchanged across the key-schedule S-box step."
+    },
+    {
+      "block_id": "key_schedule_round_counter_invariance",
+      "family": "constant_xor_invariance_copy",
+      "applies_to_unit_ids": [
+        "p1_compute_5r_lower_bound_model"
+      ],
+      "binding_roles": {
+        "source_register": "key_reg_after_sbox",
+        "target_register": "key_reg_pre_round"
+      },
+      "instance_scope": {
+        "update_start": 1,
+        "update_end": 4,
+        "bit_start": 0,
+        "bit_end": 79
+      },
+      "index_mapping": {
+        "source_update": "update",
+        "target_round": "update + 1",
+        "bit": "bit"
+      },
+      "semantic_summary": "Model the XOR-difference effect of the round-counter addition as an equality copy into the next pre-round key register.",
+      "notes": "The constant addition happens in the value domain, but it is difference-invariant in XOR-difference space."
+    }
+  ],
+  "execution_units": [
+    {
+      "unit_id": "p1_compute_5r_lower_bound_model",
+      "unit_kind": "solver_model",
+      "phase_ref": "p1_compute_5r_lower_bound",
+      "round_scope": {
+        "from_round": 1,
+        "to_round": 5,
+        "notes": "Task-scoped solver-facing unit generated from structural IR plus semantic attachment."
+      },
+      "variable_family_refs": [
+        "state_pre_round",
+        "state_after_ark",
+        "state_after_sbox",
+        "round_key_bits",
+        "key_reg_pre_round",
+        "key_reg_after_rotate",
+        "key_reg_after_sbox",
+        "ark_xor_dummy",
+        "enc_sbox_active",
+        "ks_sbox_active"
+      ],
+      "constraint_block_refs": [
+        "extract_round_keys",
+        "encryption_addroundkey_xor",
+        "encryption_sbox_activity",
+        "encryption_sbox_bijective_link",
+        "encryption_sbox_cdp",
+        "player_to_next_round",
+        "key_schedule_rotate_left_61",
+        "key_schedule_sbox_activity",
+        "key_schedule_sbox_bijective_link",
+        "key_schedule_sbox_cdp",
+        "key_schedule_copy_unchanged_lower_bits",
+        "key_schedule_round_counter_invariance"
+      ],
+      "objective": {
+        "sense": "minimize",
+        "term_refs": [
+          {
+            "variable_family_ref": "enc_sbox_active",
+            "aggregation": "sum_all_instances"
+          },
+          {
+            "variable_family_ref": "ks_sbox_active",
+            "aggregation": "sum_all_instances"
+          }
+        ],
+        "notes": "Minimize the total number of active S-boxes across the encryption rounds and key schedule updates in scope."
+      },
+      "boundary_conditions": [
+        {
+          "condition_id": "initial_key_register_nonzero",
+          "condition_type": "nonzero_sum",
+          "variable_family_ref": "key_reg_pre_round",
+          "selector": {
+            "round": 1,
+            "bit_start": 0,
+            "bit_end": 79
+          },
+          "relation": ">=",
+          "value": 1,
+          "rationale": "Exclude the zero initial-key-difference case because that case belongs to the single-key model."
+        }
+      ],
+      "emission_target_format": "lp",
+      "output_capture": [
+        {
+          "field_id": "solver_status",
+          "field_type": "string",
+          "required": true,
+          "notes": "Expected values include OPTIMAL or INFEASIBLE depending on the emitted model and solver."
+        },
+        {
+          "field_id": "objective_value",
+          "field_type": "integer",
+          "required": true,
+          "notes": "This is the lower bound on the number of active S-boxes for the task-scoped window."
+        },
+        {
+          "field_id": "lp_artifact_path",
+          "field_type": "path",
+          "required": false
+        },
+        {
+          "field_id": "solver_log_path",
+          "field_type": "path",
+          "required": false
+        }
+      ],
+      "expected_output": {
+        "output_kind": "lower_bound",
+        "symbolic_name": "N5_present80_related_key",
+        "expected_value": 3,
+        "paper_location": "Appendix A.1, Table 4",
+        "provenance": "solver_model"
+      },
+      "notes": "Table 4 reports that the minimum number of active S-boxes for 5-round PRESENT-80 is 3."
+    }
+  ],
+  "verification_contract": {
+    "checks": [
+      {
+        "check_id": "instantiation_schema_validation",
+        "kind": "json_schema",
+        "target": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/model-instantiation.present80.r5.v0.json",
+        "expectation": "The artifact must validate against docs/cryptanalysis-benchmark/model-instantiation.schema.json."
+      },
+      {
+        "check_id": "lower_bound_r5_checkpoint_compare",
+        "kind": "objective_compare",
+        "target": "p1_compute_5r_lower_bound_model",
+        "expectation": "When solver evidence exists, objective_value should match the published checkpoint 3."
+      }
+    ],
+    "unresolved_policy": "If the instantiation exists but emission, solve, or verdict evidence is still missing, keep the lane unresolved and mark the dominant blocker as backend_execution."
+  },
+  "notes": "Generated from structural IR present80-r5-rkdiff.structural-ir.v0. Semantic attachment source present80-r5-rkdiff.structural-ir.v0.semantic-attachment.v0. Current lowering scope is intentionally honest and PRESENT-specific; unresolved ARX lanes remain outside this generator."
+}

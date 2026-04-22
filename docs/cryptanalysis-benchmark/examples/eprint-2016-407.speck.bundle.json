@@ -1,0 +1,30 @@
+{
+  "bundle_id": "eprint-2016-407-speck",
+  "source_items": [
+    {
+      "id": "attack-paper",
+      "kind": "attack_paper_url",
+      "label": "eprint-2016-407",
+      "role": "attack-paper",
+      "uri": "https://eprint.iacr.org/2016/407"
+    }
+  ],
+  "paper": {
+    "id": "eprint-2016-407",
+    "title": "MILP-Based Automatic Search Algorithms for Differential and Linear Trails for Speck"
+  },
+  "primitive": {
+    "id": "Speck-32/64",
+    "family": "arx"
+  },
+  "attack": {
+    "family": "differential",
+    "difference_model": "xor",
+    "claim_kind": "characteristic",
+    "granularity": "word"
+  },
+  "target": {
+    "claim": "ARX differential trail benchmark for Speck."
+  },
+  "notes": "Useful unsupported-scope example for the current input pipeline."
+}

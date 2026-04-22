@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrimitiveIntakeCard",
+  "type": "object",
+  "required": [
+    "cardType",
+    "status",
+    "known",
+    "candidateSourceRefs",
+    "missingForRouting",
+    "missingForFullPrimitiveSpec"
+  ],
+  "properties": {
+    "cardType": {
+      "const": "primitive-intake-card"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "identified",
+        "needs-identification"
+      ]
+    },
+    "known": {
+      "type": "object",
+      "required": [
+        "primitiveId",
+        "primitiveName",
+        "family",
+        "blockSizeBits",
+        "keySizeBits",
+        "roundCountClaimed",
+        "notes"
+      ],
+      "properties": {
+        "primitiveId": {
+          "type": "string"
+        },
+        "primitiveName": {
+          "type": "string"
+        },
+        "family": {
+          "type": "string"
+        },
+        "blockSizeBits": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "keySizeBits": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "roundCountClaimed": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "candidateSourceRefs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "label",
+          "path",
+          "uri"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "missingForRouting": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missingForFullPrimitiveSpec": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

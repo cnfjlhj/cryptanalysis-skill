@@ -1,0 +1,592 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AlgorithmDescriptionV0",
+  "type": "object",
+  "$defs": {
+    "operationParameterValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean"
+            ]
+          }
+        }
+      ]
+    },
+    "operationParameters": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/operationParameterValue"
+      }
+    },
+    "semanticRefinementRequirement": {
+      "type": "object",
+      "required": [
+        "kind",
+        "summary"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "rule_family": {
+          "type": "string"
+        },
+        "required_for": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "indexingEffect": {
+      "type": "object",
+      "required": [
+        "style",
+        "summary"
+      ],
+      "properties": {
+        "style": {
+          "type": "string"
+        },
+        "selected_element": {
+          "type": "string"
+        },
+        "writeback_target": {
+          "type": "string"
+        },
+        "movement": {
+          "type": "string"
+        },
+        "produces_round_key": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "scheduleIndexingModel": {
+      "type": "object",
+      "required": [
+        "style",
+        "summary"
+      ],
+      "properties": {
+        "style": {
+          "type": "string"
+        },
+        "index_origin": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "queue_length": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "active_element": {
+          "type": "string"
+        },
+        "movement_rule": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "algorithm_description_id",
+    "status",
+    "source_materials",
+    "primitive_overview",
+    "analysis_task",
+    "validation_anchor",
+    "structured_description",
+    "provenance_and_gaps"
+  ],
+  "properties": {
+    "algorithm_description_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "reviewable",
+        "frozen-for-ir"
+      ]
+    },
+    "source_materials": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "label",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "attack_paper",
+              "primitive_paper",
+              "standard",
+              "code",
+              "appendix",
+              "note",
+              "user_statement",
+              "other"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "primitive_overview": {
+      "type": "object",
+      "required": [
+        "primitive_id",
+        "primitive_name",
+        "variant",
+        "family",
+        "block_size_bits",
+        "key_size_bits",
+        "round_count",
+        "state_layout_summary",
+        "round_structure_summary",
+        "key_schedule_summary"
+      ],
+      "properties": {
+        "primitive_id": {
+          "type": "string"
+        },
+        "primitive_name": {
+          "type": "string"
+        },
+        "variant": {
+          "type": "string"
+        },
+        "family": {
+          "type": "string"
+        },
+        "block_size_bits": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "key_size_bits": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "state_size_bits": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "round_count": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "round_index_origin": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "state_layout_summary": {
+          "type": "string"
+        },
+        "round_structure_summary": {
+          "type": "string"
+        },
+        "key_schedule_summary": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "analysis_task": {
+      "type": "object",
+      "required": [
+        "attack_family",
+        "security_goal",
+        "semantic_domain",
+        "granularity",
+        "exactness_goal",
+        "target_round_start",
+        "target_round_end",
+        "objective_metric"
+      ],
+      "properties": {
+        "attack_family": {
+          "type": "string"
+        },
+        "security_goal": {
+          "type": "string"
+        },
+        "semantic_domain": {
+          "type": "string"
+        },
+        "granularity": {
+          "type": "string"
+        },
+        "exactness_goal": {
+          "type": "string"
+        },
+        "target_round_start": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "target_round_end": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "objective_metric": {
+          "type": "string"
+        },
+        "objective_direction": {
+          "type": "string"
+        },
+        "scenario_flags": {
+          "type": "object",
+          "properties": {
+            "related_key": {
+              "type": "boolean"
+            },
+            "distinguisher_only": {
+              "type": "boolean"
+            },
+            "key_recovery_stage_present": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "task_summary": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "validation_anchor": {
+      "type": "object",
+      "required": [
+        "paper_id",
+        "paper_title",
+        "location",
+        "claim",
+        "claim_type",
+        "expected_value_type",
+        "comparison_metric"
+      ],
+      "properties": {
+        "paper_id": {
+          "type": "string"
+        },
+        "paper_title": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "claim": {
+          "type": "string"
+        },
+        "claim_type": {
+          "type": "string"
+        },
+        "expected_value_type": {
+          "type": "string"
+        },
+        "expected_value": {},
+        "comparison_metric": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "structured_description": {
+      "type": "object",
+      "required": [
+        "state_containers",
+        "round_steps",
+        "operator_inventory"
+      ],
+      "properties": {
+        "state_containers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "kind",
+              "width_bits"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "width_bits": {
+                "type": "integer"
+              },
+              "count": {
+                "type": "integer"
+              },
+              "role": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "schedule_indexing_model": {
+          "$ref": "#/$defs/scheduleIndexingModel"
+        },
+        "round_steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "step_id",
+              "step_order",
+              "name",
+              "op_type",
+              "summary"
+            ],
+            "properties": {
+              "step_id": {
+                "type": "string"
+              },
+              "step_order": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "op_type": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "operation_parameters": {
+                "$ref": "#/$defs/operationParameters"
+              },
+              "semantic_refinement_requirements": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/semanticRefinementRequirement"
+                }
+              },
+              "indexing_effect": {
+                "$ref": "#/$defs/indexingEffect"
+              },
+              "inputs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "outputs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "key_schedule_steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "step_id",
+              "step_order",
+              "name",
+              "op_type",
+              "summary"
+            ],
+            "properties": {
+              "step_id": {
+                "type": "string"
+              },
+              "step_order": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "op_type": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "operation_parameters": {
+                "$ref": "#/$defs/operationParameters"
+              },
+              "semantic_refinement_requirements": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/semanticRefinementRequirement"
+                }
+              },
+              "indexing_effect": {
+                "$ref": "#/$defs/indexingEffect"
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "operator_inventory": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance_and_gaps": {
+      "type": "object",
+      "required": [
+        "explicit_facts",
+        "inferred_facts",
+        "unresolved_questions",
+        "blocking_gaps",
+        "ready_for_ir"
+      ],
+      "properties": {
+        "explicit_facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inferred_facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unresolved_questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocking_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ready_for_ir": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

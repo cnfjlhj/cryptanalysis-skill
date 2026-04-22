@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GlobalModelPlan",
+  "type": "object",
+  "required": [
+    "plan_id",
+    "target_primitive_id",
+    "target_attack_id",
+    "backend",
+    "composition_scope",
+    "local_rule_packs",
+    "phases",
+    "claim_interpretation"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string"
+    },
+    "target_primitive_id": {
+      "type": "string"
+    },
+    "target_attack_id": {
+      "type": "string"
+    },
+    "backend": {
+      "type": "string",
+      "enum": [
+        "milp",
+        "sat",
+        "smt",
+        "cp",
+        "custom"
+      ]
+    },
+    "composition_scope": {
+      "type": "object",
+      "required": [
+        "include_encryption_process",
+        "include_key_schedule",
+        "include_key_additions",
+        "model_variant"
+      ],
+      "properties": {
+        "include_encryption_process": {
+          "type": "boolean"
+        },
+        "include_key_schedule": {
+          "type": "boolean"
+        },
+        "include_key_additions": {
+          "type": "boolean"
+        },
+        "model_variant": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "local_rule_packs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "phase_id",
+          "purpose",
+          "round_scope",
+          "objective",
+          "expected_output_kind"
+        ],
+        "properties": {
+          "phase_id": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "round_scope": {
+            "type": "object",
+            "required": [
+              "from_round",
+              "to_round"
+            ],
+            "properties": {
+              "from_round": {
+                "type": "integer"
+              },
+              "to_round": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          },
+          "objective": {
+            "type": "object",
+            "required": [
+              "kind",
+              "target_expression"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "minimize_active_sboxes",
+                  "bound_second_window_given_first_window",
+                  "derive_upper_bound",
+                  "custom"
+                ]
+              },
+              "target_expression": {
+                "type": "string"
+              },
+              "notes": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "extra_constraints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expected_output_kind": {
+            "type": "string",
+            "enum": [
+              "lower_bound",
+              "upper_bound",
+              "intermediate_constraint",
+              "final_claim",
+              "custom"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "claim_interpretation": {
+      "type": "object",
+      "required": [
+        "result_kind",
+        "provenance_mode"
+      ],
+      "properties": {
+        "result_kind": {
+          "type": "string",
+          "enum": [
+            "exact_characteristic",
+            "upper_bound_from_lower_bounds",
+            "heuristic_characteristic",
+            "custom"
+          ]
+        },
+        "provenance_mode": {
+          "type": "string",
+          "enum": [
+            "solver_direct",
+            "split_strategy_derivation",
+            "mixed"
+          ]
+        },
+        "single_sbox_mdp": {
+          "type": "string"
+        },
+        "combination_rule": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

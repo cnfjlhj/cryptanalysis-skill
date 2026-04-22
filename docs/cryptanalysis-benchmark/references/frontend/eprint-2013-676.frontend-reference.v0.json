@@ -1,0 +1,78 @@
+{
+  "reference_id": "eprint-2013-676.frontend-reference.v0",
+  "status": "active",
+  "paper_id": "eprint-2013-676",
+  "paper_title": "Automatic Security Evaluation and (Related-key) Differential Characteristic Search: Application to SIMON, PRESENT, LBlock, DES(L) and Other Bit-oriented Block Ciphers",
+  "wave": "wave-1",
+  "primitive_family": "spn",
+  "attack_family": "related_key_differential",
+  "stress_points": [
+    "bit-oriented SPN structure",
+    "S-box local semantics",
+    "XOR propagation",
+    "bit permutation handling",
+    "convex-hull-driven inequality extraction"
+  ],
+  "raw_bundle": {
+    "label": "PRESENT-80 r5 bundle",
+    "path": "docs/cryptanalysis-benchmark/examples/eprint-2013-676.present80-r5.bundle.json"
+  },
+  "frontend_layers": {
+    "input_normalization": {
+      "status": "available",
+      "artifacts": [
+        {
+          "label": "PRESENT-80 r5 bundle",
+          "path": "docs/cryptanalysis-benchmark/examples/eprint-2013-676.present80-r5.bundle.json"
+        }
+      ],
+      "notes": "Bundle-level intake exists and is used by the current full-chain demo lane."
+    },
+    "algorithm_description": {
+      "status": "golden",
+      "artifacts": [
+        {
+          "label": "PRESENT-80 algorithm description",
+          "path": "docs/cryptanalysis-benchmark/examples/eprint-2013-676.present80.algorithm-description.v0.json"
+        }
+      ],
+      "notes": "Curated reviewable algorithm description exists for the r5 checkpoint lane."
+    },
+    "structural_ir": {
+      "status": "golden",
+      "artifacts": [
+        {
+          "label": "PRESENT-80 structural IR",
+          "path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/structural-ir.present80.r5.v0.json"
+        }
+      ],
+      "notes": "Curated structural IR exists for the same PRESENT-80 5-round checkpoint."
+    }
+  },
+  "downstream_status": {
+    "status": "execution_backed",
+    "artifacts": [
+      {
+        "label": "PRESENT semantic attachment",
+        "path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/semantic-attachment.present80.r5.v0.json"
+      },
+      {
+        "label": "PRESENT generated model instantiation",
+        "path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/model-instantiation.present80.r5.v0.json"
+      },
+      {
+        "label": "PRESENT generated calibration reference",
+        "path": "docs/cryptanalysis-benchmark/trials/eprint-2013-676/calibration-reference.present80-r5-ir-v0.json"
+      }
+    ],
+    "notes": "This is the strongest current demo lane and reaches execution-backed verdict/report artifacts."
+  },
+  "current_frontend_ceiling": "structural_ir_ready",
+  "next_priority": "Generalize the curated algorithm-description and structural-IR patterns into reusable extraction and projection drafts rather than keeping this lane paper-specific.",
+  "known_gaps": [
+    "Algorithm description is still curated rather than extracted automatically from arbitrary materials.",
+    "Structural IR is still curated rather than generated from a draft projector.",
+    "The current lane validates a 5-round checkpoint but does not yet solver-certify the downstream 24-round claim."
+  ],
+  "notes": "P1 is the anchor reference for the current frontend and downstream cryptanalysis demo lane."
+}

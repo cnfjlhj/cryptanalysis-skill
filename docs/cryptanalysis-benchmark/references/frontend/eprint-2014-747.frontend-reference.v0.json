@@ -1,0 +1,54 @@
+{
+  "reference_id": "eprint-2014-747.frontend-reference.v0",
+  "status": "active",
+  "paper_id": "eprint-2014-747",
+  "paper_title": "Towards Finding the Best Characteristics of Some Bit-Oriented Block Ciphers and Automatic Enumeration of (Related-key) Differential and Linear Characteristics with Predefined Properties",
+  "wave": "wave-1",
+  "primitive_family": "spn",
+  "attack_family": "differential_or_linear_with_predefined_properties",
+  "stress_points": [
+    "predefined property constraints",
+    "enumeration-oriented metadata",
+    "multi-result tracking",
+    "bit-oriented constraint framing"
+  ],
+  "raw_bundle": {
+    "label": "Predefined-properties bundle",
+    "path": "docs/cryptanalysis-benchmark/examples/eprint-2014-747.predefined-properties.bundle.json"
+  },
+  "frontend_layers": {
+    "input_normalization": {
+      "status": "available",
+      "artifacts": [
+        {
+          "label": "Predefined-properties bundle",
+          "path": "docs/cryptanalysis-benchmark/examples/eprint-2014-747.predefined-properties.bundle.json"
+        }
+      ],
+      "notes": "Bundle exists as a wave-1 corpus seed."
+    },
+    "algorithm_description": {
+      "status": "missing",
+      "artifacts": [],
+      "notes": "No curated algorithm description exists yet."
+    },
+    "structural_ir": {
+      "status": "missing",
+      "artifacts": [],
+      "notes": "No structural IR exists yet."
+    }
+  },
+  "downstream_status": {
+    "status": "none",
+    "artifacts": [],
+    "notes": "This paper has not yet progressed beyond bundle-level corpus entry."
+  },
+  "current_frontend_ceiling": "bundle_only",
+  "next_priority": "Create a gold algorithm description that makes predefined-property handling and enumeration targets explicit.",
+  "known_gaps": [
+    "No curated algorithm description yet.",
+    "No structural IR yet.",
+    "No normalized attack-target shape for predefined-property or enumeration lanes."
+  ],
+  "notes": "P2 is intentionally tracked as a wave-1 gap case rather than being silently absent."
+}

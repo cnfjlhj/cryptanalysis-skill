@@ -1,0 +1,537 @@
+{
+  "ir_id": "present80-r5-rkdiff.structural-ir.v0",
+  "status": "reviewable",
+  "source_algorithm_description_id": "eprint-2013-676.present80.r5.algorithm-description.v0",
+  "analysis_context": {
+    "primitive_id": "present80",
+    "attack_family": "related_key_differential",
+    "semantic_domain": "xor_differential",
+    "granularity": "bit",
+    "exactness_goal": "exact",
+    "target_round_start": 1,
+    "target_round_end": 5,
+    "objective_metric": "minimum number of active S-boxes",
+    "objective_direction": "minimize",
+    "scenario_flags": {
+      "related_key": true,
+      "distinguisher_only": false,
+      "key_recovery_stage_present": true
+    },
+    "validation_anchor_ref": "eprint-2013-676 Appendix A.1 Table 4",
+    "notes": "This IR is task-scoped to the 5-round checkpoint rather than to the full 31-round primitive."
+  },
+  "index_domains": [
+    {
+      "domain_id": "rounds_r1_r5",
+      "kind": "round",
+      "start": 1,
+      "end": 5,
+      "purpose": "Main encryption rounds inside the current analysis scope."
+    },
+    {
+      "domain_id": "round_boundaries_r1_r6",
+      "kind": "round_boundary",
+      "start": 1,
+      "end": 6,
+      "purpose": "State boundaries before round 1 and after each modeled round."
+    },
+    {
+      "domain_id": "key_updates_u1_u4",
+      "kind": "update",
+      "start": 1,
+      "end": 4,
+      "purpose": "Key-schedule updates needed to generate round keys K2 through K5."
+    },
+    {
+      "domain_id": "state_bits_b0_b63",
+      "kind": "bit",
+      "start": 0,
+      "end": 63,
+      "purpose": "Bit positions of the 64-bit encryption state."
+    },
+    {
+      "domain_id": "key_bits_b0_b79",
+      "kind": "bit",
+      "start": 0,
+      "end": 79,
+      "purpose": "Bit positions of the 80-bit key register."
+    },
+    {
+      "domain_id": "sboxes_s0_s15",
+      "kind": "slot",
+      "start": 0,
+      "end": 15,
+      "purpose": "The 16 parallel 4-bit S-box instances in each encryption round."
+    }
+  ],
+  "state_families": [
+    {
+      "family_id": "enc_state_pre_round",
+      "role": "encryption_state_input_boundary",
+      "container_kind": "bitvector",
+      "width_bits": 64,
+      "index_domain_refs": [
+        "round_boundaries_r1_r6"
+      ],
+      "summary": "The 64-bit encryption state at the input boundary of each modeled round."
+    },
+    {
+      "family_id": "enc_state_after_ark",
+      "role": "post_key_add_state",
+      "container_kind": "bitvector",
+      "width_bits": 64,
+      "index_domain_refs": [
+        "rounds_r1_r5"
+      ],
+      "summary": "The 64-bit encryption state after addRoundKey in each modeled round."
+    },
+    {
+      "family_id": "enc_state_after_sbox",
+      "role": "post_sbox_state",
+      "container_kind": "bitvector",
+      "width_bits": 64,
+      "index_domain_refs": [
+        "rounds_r1_r5"
+      ],
+      "summary": "The 64-bit encryption state after the 16 parallel S-box applications in each modeled round."
+    },
+    {
+      "family_id": "round_key",
+      "role": "encryption_round_key",
+      "container_kind": "bitvector",
+      "width_bits": 64,
+      "index_domain_refs": [
+        "rounds_r1_r5"
+      ],
+      "summary": "The 64-bit round key consumed by each modeled encryption round."
+    },
+    {
+      "family_id": "key_reg_pre_round",
+      "role": "key_schedule_register_before_extraction",
+      "container_kind": "bitvector",
+      "width_bits": 80,
+      "index_domain_refs": [
+        "rounds_r1_r5"
+      ],
+      "summary": "The 80-bit key schedule register before round-key extraction for rounds 1 through 5."
+    },
+    {
+      "family_id": "key_reg_after_rotate",
+      "role": "key_schedule_after_rotation",
+      "container_kind": "bitvector",
+      "width_bits": 80,
+      "index_domain_refs": [
+        "key_updates_u1_u4"
+      ],
+      "summary": "The 80-bit key schedule register after the 61-bit left rotation in each modeled update."
+    },
+    {
+      "family_id": "key_reg_after_sbox",
+      "role": "key_schedule_after_sbox",
+      "container_kind": "bitvector",
+      "width_bits": 80,
+      "index_domain_refs": [
+        "key_updates_u1_u4"
+      ],
+      "summary": "The 80-bit key schedule register after the top nibble passes through the PRESENT S-box."
+    }
+  ],
+  "operator_templates": [
+    {
+      "template_id": "extract_round_key",
+      "name": "Extract round key",
+      "op_type": "extract_bits",
+      "repeat_domain_refs": [
+        "rounds_r1_r5"
+      ],
+      "input_family_refs": [
+        "key_reg_pre_round"
+      ],
+      "output_family_refs": [
+        "round_key"
+      ],
+      "operator_parameters": {
+        "source_slice": "key_reg_pre_round[79:16]",
+        "width_bits": 64
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "round_key_generation"
+      ],
+      "indexing_relation_refs": [
+        "present_fixed_key_register"
+      ],
+      "summary": "Take the left-most 64 bits of the 80-bit key register as the round key for each modeled round.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    },
+    {
+      "template_id": "enc_add_round_key",
+      "name": "Encryption addRoundKey",
+      "op_type": "key_add",
+      "repeat_domain_refs": [
+        "rounds_r1_r5"
+      ],
+      "input_family_refs": [
+        "enc_state_pre_round",
+        "round_key"
+      ],
+      "output_family_refs": [
+        "enc_state_after_ark"
+      ],
+      "operator_parameters": {
+        "word_size_bits": 64,
+        "combiner": "xor"
+      },
+      "semantic_tags": [
+        "xor",
+        "encryption_round_step"
+      ],
+      "summary": "Combine the current encryption state with the round key at the start of each modeled round.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    },
+    {
+      "template_id": "enc_sbox_layer",
+      "name": "Encryption S-box layer",
+      "op_type": "sbox",
+      "repeat_domain_refs": [
+        "rounds_r1_r5",
+        "sboxes_s0_s15"
+      ],
+      "input_family_refs": [
+        "enc_state_after_ark"
+      ],
+      "output_family_refs": [
+        "enc_state_after_sbox"
+      ],
+      "operator_parameters": {
+        "sbox_name": "present_sbox",
+        "cell_size_bits": 4,
+        "parallel_count": 16
+      },
+      "semantic_tags": [
+        "parallel_sboxes",
+        "nonlinear_layer"
+      ],
+      "refinement_requirements": [
+        {
+          "slot_id": "enc_sbox_activity",
+          "kind": "local_rule_pack",
+          "domain": "xor_differential",
+          "rule_family": "present_sbox_differential_or_activity",
+          "required_for": "state-transition feasibility and active-S-box counting",
+          "summary": "Later semantic refinement must attach the PRESENT S-box differential/activity rule pack to this template."
+        }
+      ],
+      "summary": "Apply the PRESENT 4-bit S-box in parallel to the 16 nibble positions of each modeled round.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    },
+    {
+      "template_id": "enc_player",
+      "name": "Encryption permutation layer",
+      "op_type": "permute_bits",
+      "repeat_domain_refs": [
+        "rounds_r1_r5"
+      ],
+      "input_family_refs": [
+        "enc_state_after_sbox"
+      ],
+      "output_family_refs": [
+        "enc_state_pre_round"
+      ],
+      "operator_parameters": {
+        "permutation_name": "present_player",
+        "state_size_bits": 64
+      },
+      "semantic_tags": [
+        "linear_permutation",
+        "round_boundary_transition"
+      ],
+      "summary": "Move the post-S-box state to the next round boundary according to the PRESENT bit permutation.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    },
+    {
+      "template_id": "ks_rotate_left_61",
+      "name": "Key schedule rotate",
+      "op_type": "rotate_left",
+      "repeat_domain_refs": [
+        "key_updates_u1_u4"
+      ],
+      "input_family_refs": [
+        "key_reg_pre_round"
+      ],
+      "output_family_refs": [
+        "key_reg_after_rotate"
+      ],
+      "operator_parameters": {
+        "rotation_amount": 61,
+        "register_size_bits": 80
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "register_update"
+      ],
+      "indexing_relation_refs": [
+        "present_fixed_key_register"
+      ],
+      "summary": "Rotate the 80-bit key register left by 61 positions in each modeled key update.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    },
+    {
+      "template_id": "ks_top_nibble_sbox",
+      "name": "Key schedule top-nibble S-box",
+      "op_type": "sbox",
+      "repeat_domain_refs": [
+        "key_updates_u1_u4"
+      ],
+      "input_family_refs": [
+        "key_reg_after_rotate"
+      ],
+      "output_family_refs": [
+        "key_reg_after_sbox"
+      ],
+      "operator_parameters": {
+        "sbox_name": "present_sbox",
+        "target_slice": "key_reg_after_rotate[79:76]",
+        "cell_size_bits": 4
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "nonlinear_update"
+      ],
+      "refinement_requirements": [
+        {
+          "slot_id": "ks_sbox_related_key",
+          "kind": "local_rule_pack",
+          "domain": "xor_differential",
+          "rule_family": "present_sbox_differential_or_activity",
+          "required_for": "related-key propagation through the key-schedule nonlinear update",
+          "summary": "Later semantic refinement must attach PRESENT S-box semantics to the key-schedule nonlinear template."
+        }
+      ],
+      "indexing_relation_refs": [
+        "present_fixed_key_register"
+      ],
+      "summary": "Apply the PRESENT S-box to the top 4 bits of the rotated key register in each update.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    },
+    {
+      "template_id": "ks_add_round_counter",
+      "name": "Key schedule round-counter injection",
+      "op_type": "xor",
+      "repeat_domain_refs": [
+        "key_updates_u1_u4"
+      ],
+      "input_family_refs": [
+        "key_reg_after_sbox"
+      ],
+      "output_family_refs": [
+        "key_reg_pre_round"
+      ],
+      "operator_parameters": {
+        "counter_size_bits": 5,
+        "target_bits": [
+          "key_reg_after_sbox[19]",
+          "key_reg_after_sbox[18]",
+          "key_reg_after_sbox[17]",
+          "key_reg_after_sbox[16]",
+          "key_reg_after_sbox[15]"
+        ]
+      },
+      "semantic_tags": [
+        "key_schedule",
+        "constant_injection"
+      ],
+      "indexing_relation_refs": [
+        "present_fixed_key_register"
+      ],
+      "summary": "Inject the round counter and produce the next round's key register state.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    }
+  ],
+  "indexing_relations": [
+    {
+      "relation_id": "present_fixed_key_register",
+      "style": "fixed_register",
+      "domain_ref": "key_updates_u1_u4",
+      "family_refs": [
+        "key_reg_pre_round",
+        "round_key"
+      ],
+      "active_selector": "same 80-bit register every round",
+      "selection_rule": "Before each modeled round, extract bits [79:16] of the same key register as the round key.",
+      "advancement_rule": "The same register is mutated in place by rotate, top-nibble S-box, and round-counter injection; there is no queue advance or slot rotation between distinct register objects.",
+      "summary": "PRESENT uses a single fixed key register whose slice yields the round key and whose full state is updated in place across key-schedule steps.",
+      "evidence": [
+        "PRESENT CHES 2007 Section 3"
+      ]
+    }
+  ],
+  "dataflow_edges": [
+    {
+      "edge_id": "e1",
+      "from_kind": "state_family",
+      "from_ref": "key_reg_pre_round",
+      "to_kind": "operator_template",
+      "to_ref": "extract_round_key",
+      "summary": "The current key register is the source of round-key extraction."
+    },
+    {
+      "edge_id": "e2",
+      "from_kind": "operator_template",
+      "from_ref": "extract_round_key",
+      "to_kind": "state_family",
+      "to_ref": "round_key",
+      "summary": "Round-key extraction produces the round key family."
+    },
+    {
+      "edge_id": "e3",
+      "from_kind": "state_family",
+      "from_ref": "enc_state_pre_round",
+      "to_kind": "operator_template",
+      "to_ref": "enc_add_round_key",
+      "summary": "Each round consumes the boundary state as the left input of addRoundKey."
+    },
+    {
+      "edge_id": "e4",
+      "from_kind": "state_family",
+      "from_ref": "round_key",
+      "to_kind": "operator_template",
+      "to_ref": "enc_add_round_key",
+      "summary": "Each round consumes its round key at addRoundKey."
+    },
+    {
+      "edge_id": "e5",
+      "from_kind": "operator_template",
+      "from_ref": "enc_add_round_key",
+      "to_kind": "state_family",
+      "to_ref": "enc_state_after_ark",
+      "summary": "addRoundKey produces the post-key-add state."
+    },
+    {
+      "edge_id": "e6",
+      "from_kind": "state_family",
+      "from_ref": "enc_state_after_ark",
+      "to_kind": "operator_template",
+      "to_ref": "enc_sbox_layer",
+      "summary": "The post-key-add state is consumed by the S-box layer."
+    },
+    {
+      "edge_id": "e7",
+      "from_kind": "operator_template",
+      "from_ref": "enc_sbox_layer",
+      "to_kind": "state_family",
+      "to_ref": "enc_state_after_sbox",
+      "summary": "The S-box layer produces the post-S-box state."
+    },
+    {
+      "edge_id": "e8",
+      "from_kind": "state_family",
+      "from_ref": "enc_state_after_sbox",
+      "to_kind": "operator_template",
+      "to_ref": "enc_player",
+      "summary": "The post-S-box state is consumed by the permutation layer."
+    },
+    {
+      "edge_id": "e9",
+      "from_kind": "operator_template",
+      "from_ref": "enc_player",
+      "to_kind": "state_family",
+      "to_ref": "enc_state_pre_round",
+      "summary": "The permutation layer produces the next round boundary state."
+    },
+    {
+      "edge_id": "e10",
+      "from_kind": "state_family",
+      "from_ref": "key_reg_pre_round",
+      "to_kind": "operator_template",
+      "to_ref": "ks_rotate_left_61",
+      "summary": "Each modeled key update starts from the current key register state."
+    },
+    {
+      "edge_id": "e11",
+      "from_kind": "operator_template",
+      "from_ref": "ks_rotate_left_61",
+      "to_kind": "state_family",
+      "to_ref": "key_reg_after_rotate",
+      "summary": "The rotation step produces the rotated key register state."
+    },
+    {
+      "edge_id": "e12",
+      "from_kind": "state_family",
+      "from_ref": "key_reg_after_rotate",
+      "to_kind": "operator_template",
+      "to_ref": "ks_top_nibble_sbox",
+      "summary": "The rotated key register is consumed by the top-nibble S-box update."
+    },
+    {
+      "edge_id": "e13",
+      "from_kind": "operator_template",
+      "from_ref": "ks_top_nibble_sbox",
+      "to_kind": "state_family",
+      "to_ref": "key_reg_after_sbox",
+      "summary": "The S-box update produces the post-S-box key register state."
+    },
+    {
+      "edge_id": "e14",
+      "from_kind": "state_family",
+      "from_ref": "key_reg_after_sbox",
+      "to_kind": "operator_template",
+      "to_ref": "ks_add_round_counter",
+      "summary": "The post-S-box key register is consumed by round-counter injection."
+    },
+    {
+      "edge_id": "e15",
+      "from_kind": "operator_template",
+      "from_ref": "ks_add_round_counter",
+      "to_kind": "state_family",
+      "to_ref": "key_reg_pre_round",
+      "summary": "Round-counter injection yields the next round's key register state."
+    }
+  ],
+  "observation_points": [
+    {
+      "point_id": "obs_enc_sbox_layer",
+      "ref_kind": "operator_template",
+      "ref": "enc_sbox_layer",
+      "role": "objective_surface",
+      "summary": "The active encryption S-box instances over rounds 1 through 5 form the objective surface for the paper checkpoint."
+    },
+    {
+      "point_id": "obs_r5_checkpoint",
+      "ref_kind": "state_family",
+      "ref": "enc_state_pre_round",
+      "role": "validation_checkpoint",
+      "summary": "The 5-round task is interpreted at the round-5 boundary and compared against the paper's minimum-active-S-box checkpoint."
+    }
+  ],
+  "provenance_and_gaps": {
+    "derived_from": [
+      "docs/cryptanalysis-benchmark/examples/eprint-2013-676.present80.algorithm-description.v0.json"
+    ],
+    "semantic_layers_not_yet_attached": [
+      "No backend-specific variable families or inequalities are attached yet.",
+      "Objective extraction still names the operator template at a conceptual level instead of a solver expression.",
+      "The fixed-register indexing relation is declared, but it is not yet expanded into fully instantiated round-local graph objects."
+    ],
+    "blocking_gaps": [
+      "The observation-point schema is still too light to express exact objective extraction rules.",
+      "Dataflow edges remain summary-heavy for exact slice-level transfer and boundary-index transfer rules needed by a future automatic emitter."
+    ],
+    "ready_for_semantic_refinement": true,
+    "notes": "This IR is intentionally structural and task-scoped. It is now explicit enough for a later semantic-refinement stage, but still earlier than backend emission."
+  }
+}

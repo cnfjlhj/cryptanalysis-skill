@@ -1,0 +1,12 @@
+{
+  "instantiationId": "present80-rkdiff24-upper-bound-instantiation-v1",
+  "unitId": "p1_compute_12r_lower_bound_model",
+  "outputPath": "outputs/cryptanalysis-benchmark/eprint-2013-676/p1_compute_12r_lower_bound_model.lp",
+  "variableCount": 6827,
+  "binaryCount": 6827,
+  "objectiveTermCount": 203,
+  "constraintCount": 10612,
+  "primitiveId": "present80",
+  "attackId": "present80-rkdiff-characteristic-upper-bound-24r",
+  "generatedAt": "2026-04-22T02:40:31.834Z"
+}

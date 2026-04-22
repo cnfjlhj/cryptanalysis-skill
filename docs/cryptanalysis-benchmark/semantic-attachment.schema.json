@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SemanticAttachmentV0",
+  "type": "object",
+  "required": [
+    "attachment_id",
+    "status",
+    "source_structural_ir_id",
+    "analysis_context",
+    "loaded_rule_packs",
+    "template_attachments",
+    "resolution_summary",
+    "provenance_and_gaps"
+  ],
+  "properties": {
+    "attachment_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "reviewable",
+        "frozen-for-model-instantiation"
+      ]
+    },
+    "source_structural_ir_id": {
+      "type": "string"
+    },
+    "analysis_context": {
+      "type": "object",
+      "required": [
+        "primitive_id",
+        "semantic_domain",
+        "target_round_start",
+        "target_round_end"
+      ],
+      "properties": {
+        "primitive_id": {
+          "type": "string"
+        },
+        "attack_family": {
+          "type": "string"
+        },
+        "semantic_domain": {
+          "type": "string"
+        },
+        "granularity": {
+          "type": "string"
+        },
+        "target_round_start": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "target_round_end": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "loaded_rule_packs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_pack_id",
+          "source_path",
+          "target_primitive_id",
+          "operator_type",
+          "component_name",
+          "semantic_domain"
+        ],
+        "properties": {
+          "rule_pack_id": {
+            "type": "string"
+          },
+          "source_path": {
+            "type": "string"
+          },
+          "target_primitive_id": {
+            "type": "string"
+          },
+          "operator_type": {
+            "type": "string"
+          },
+          "component_name": {
+            "type": "string"
+          },
+          "semantic_domain": {
+            "type": "string"
+          },
+          "granularity": {
+            "type": "string"
+          },
+          "exactness": {
+            "type": "string"
+          },
+          "rule_families": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "template_attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "attachment_entry_id",
+          "template_ref",
+          "op_type",
+          "rule_family",
+          "resolution_status",
+          "matched_rule_pack_refs",
+          "matching_axes",
+          "summary"
+        ],
+        "properties": {
+          "attachment_entry_id": {
+            "type": "string"
+          },
+          "template_ref": {
+            "type": "string"
+          },
+          "requirement_slot_id": {
+            "type": "string"
+          },
+          "op_type": {
+            "type": "string"
+          },
+          "rule_family": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "component_name_hint": {
+            "type": "string"
+          },
+          "input_width_bits": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "output_width_bits": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "resolution_status": {
+            "type": "string",
+            "enum": [
+              "resolved",
+              "missing",
+              "ambiguous"
+            ]
+          },
+          "matched_rule_pack_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "selected_rule_pack_ref": {
+            "type": "string"
+          },
+          "matching_axes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "resolution_summary": {
+      "type": "object",
+      "required": [
+        "total_requirements",
+        "resolved_count",
+        "missing_count",
+        "ambiguous_count",
+        "ready_for_model_instantiation"
+      ],
+      "properties": {
+        "total_requirements": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "resolved_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ambiguous_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ready_for_model_instantiation": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance_and_gaps": {
+      "type": "object",
+      "required": [
+        "derived_from",
+        "unresolved_attachment_ids",
+        "ready_for_model_instantiation"
+      ],
+      "properties": {
+        "derived_from": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unresolved_attachment_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ready_for_model_instantiation": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
